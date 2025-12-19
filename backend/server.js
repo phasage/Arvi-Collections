@@ -79,27 +79,37 @@ const corsOptions = {
     
     // Allow requests with no origin (like mobile apps, Postman, or file:// protocol)
     if (!origin) {
+      console.log('CORS allowing request with no origin (file:// protocol)');
       callback(null, true);
       return;
     }
     
     // Allow any localhost origin for development
     if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+      console.log('CORS allowing localhost origin:', origin);
       callback(null, true);
       return;
     }
     
     if (allowedOrigins.includes(origin)) {
+      console.log('CORS allowing whitelisted origin:', origin);
       callback(null, true);
     } else {
-      console.log('CORS blocked origin:', origin);
+      console.log('CORS allowing origin (demo mode):', origin);
       callback(null, true); // Allow all origins in demo mode
     }
   },
   credentials: true,
   optionsSuccessStatus: 200
 };
-app.use(cors(corsOptions));
+// Use simple CORS for demo mode
+app.use(cors({
+  origin: true, // Allow all origins in demo mode
+  credentials: true,
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
