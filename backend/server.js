@@ -136,14 +136,42 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/arvis-collection', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('✅ MongoDB connected successfully'))
-.catch(err => {
-  console.error('❌ MongoDB connection error:', err);
-  process.exit(1);
+const connectDB = async () => {
+  try {
+    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/arvis-collection';
+    
+    // Try to connect to MongoDB
+    await mongoose.connect(mongoURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+    });
+    
+    console.log('✅ MongoDB connected successfully');
+    return true;
+  } catch (err) {
+    console.log('⚠️  MongoDB not available, using demo mode');
+    console.log('💡 To use full database features, install MongoDB or use MongoDB Atlas');
+    
+    // Create a simple in-memory mock for demo
+    global.demoMode = true;
+    global.demoData = {
+      users: [],
+      products: [],
+      categories: [],
+      orders: []
+    };
+    
+    return false;
+  }
+};
+
+connectDB().then(async (connected) => {
+  if (!connected) {
+    // Initialize demo data if MongoDB is not available
+    const { initializeDemoData } = require('./utils/demoData');
+    await initializeDemoData();
+  }
 });
 
 // Health check route

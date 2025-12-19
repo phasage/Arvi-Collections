@@ -38,6 +38,48 @@ const sendTokenResponse = (user, statusCode, res) => {
 const register = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
 
+  if (global.demoMode) {
+    // Demo mode - use in-memory data
+    const bcrypt = require('bcryptjs');
+    
+    // Check if user already exists
+    const existingUser = global.demoData.users.find(u => u.email === email);
+    if (existingUser) {
+      return next(new ErrorResponse('User already exists with this email', 400));
+    }
+
+    // Create user
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const newUser = {
+      _id: String(global.demoData.users.length + 1),
+      name,
+      email,
+      password: hashedPassword,
+      role: 'user',
+      isEmailVerified: true, // Auto-verify in demo mode
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      getSignedJwtToken: function() {
+        const jwt = require('jsonwebtoken');
+        return jwt.sign(
+          { 
+            id: this._id,
+            email: this.email,
+            role: this.role
+          },
+          process.env.JWT_SECRET || 'demo-secret-key',
+          { expiresIn: process.env.JWT_EXPIRE || '7d' }
+        );
+      }
+    };
+
+    global.demoData.users.push(newUser);
+    sendTokenResponse(newUser, 201, res);
+    return;
+  }
+
+  // MongoDB mode
   // Check if user already exists
   const existingUser = await User.findOne({ email });
   if (existingUser) {
@@ -87,7 +129,46 @@ const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findByCredentials(email, password);
+    let user;
+    
+    if (global.demoMode) {
+      // Demo mode - use in-memory data
+      const bcrypt = require('bcryptjs');
+      const demoUser = global.demoData.users.find(u => u.email === email && u.isActive);
+      
+      if (!demoUser) {
+        return next(new ErrorResponse('Invalid credentials', 401));
+      }
+      
+      const isMatch = await bcrypt.compare(password, demoUser.password);
+      if (!isMatch) {
+        return next(new ErrorResponse('Invalid credentials', 401));
+      }
+      
+      user = {
+        _id: demoUser._id,
+        name: demoUser.name,
+        email: demoUser.email,
+        role: demoUser.role,
+        isEmailVerified: demoUser.isEmailVerified,
+        getSignedJwtToken: function() {
+          const jwt = require('jsonwebtoken');
+          return jwt.sign(
+            { 
+              id: this._id,
+              email: this.email,
+              role: this.role
+            },
+            process.env.JWT_SECRET || 'demo-secret-key',
+            { expiresIn: process.env.JWT_EXPIRE || '7d' }
+          );
+        }
+      };
+    } else {
+      // MongoDB mode
+      user = await User.findByCredentials(email, password);
+    }
+    
     sendTokenResponse(user, 200, res);
   } catch (error) {
     return next(new ErrorResponse(error.message, 401));

@@ -7,6 +7,18 @@ const ErrorResponse = require('../utils/errorResponse');
 // @route   GET /api/categories
 // @access  Public
 const getCategories = asyncHandler(async (req, res, next) => {
+  if (global.demoMode) {
+    // Demo mode - use in-memory data
+    const categories = global.demoData.categories.filter(c => c.status === 'active');
+    
+    return res.status(200).json({
+      success: true,
+      count: categories.length,
+      data: categories
+    });
+  }
+
+  // MongoDB mode
   const categories = await Category.find({ status: 'active' })
     .populate('subcategories')
     .sort({ sortOrder: 1, name: 1 });

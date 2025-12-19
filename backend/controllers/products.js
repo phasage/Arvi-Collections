@@ -22,7 +22,51 @@ const getProducts = asyncHandler(async (req, res, next) => {
     search
   } = req.query;
 
-  // Build filter object
+  if (global.demoMode) {
+    // Demo mode - filter in-memory data
+    let products = global.demoData.products.filter(p => p.status === 'active');
+    
+    // Apply filters
+    if (category) products = products.filter(p => p.category === category);
+    if (minPrice) products = products.filter(p => p.price >= parseFloat(minPrice));
+    if (maxPrice) products = products.filter(p => p.price <= parseFloat(maxPrice));
+    if (brand) products = products.filter(p => p.brand && p.brand.toLowerCase().includes(brand.toLowerCase()));
+    if (featured !== undefined) products = products.filter(p => p.featured === (featured === 'true'));
+    if (onSale !== undefined) products = products.filter(p => p.onSale === (onSale === 'true'));
+    if (search) {
+      const searchLower = search.toLowerCase();
+      products = products.filter(p => 
+        p.name.toLowerCase().includes(searchLower) ||
+        p.description.toLowerCase().includes(searchLower) ||
+        (p.tags && p.tags.some(tag => tag.toLowerCase().includes(searchLower)))
+      );
+    }
+
+    // Add category info
+    products = products.map(product => ({
+      ...product,
+      category: global.demoData.categories.find(c => c._id === product.category)
+    }));
+
+    const total = products.length;
+    const startIndex = (parseInt(page) - 1) * parseInt(limit);
+    const endIndex = startIndex + parseInt(limit);
+    const paginatedProducts = products.slice(startIndex, endIndex);
+
+    return res.status(200).json({
+      success: true,
+      count: paginatedProducts.length,
+      total,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        pages: Math.ceil(total / parseInt(limit))
+      },
+      data: paginatedProducts
+    });
+  }
+
+  // MongoDB mode
   const filters = {
     status: 'active',
     page: parseInt(page),
@@ -40,37 +84,8 @@ const getProducts = asyncHandler(async (req, res, next) => {
   if (inStock !== undefined) filters.inStock = inStock === 'true';
   if (search) filters.search = search;
 
-  // Get products with filters
   const products = await Product.getFiltered(filters);
-
-  // Get total count for pagination
   const totalQuery = Product.find({ status: 'active' });
-  if (category) totalQuery.find({ category });
-  if (minPrice || maxPrice) {
-    const priceFilter = {};
-    if (minPrice) priceFilter.$gte = parseFloat(minPrice);
-    if (maxPrice) priceFilter.$lte = parseFloat(maxPrice);
-    totalQuery.find({ price: priceFilter });
-  }
-  if (brand) totalQuery.find({ brand: new RegExp(brand, 'i') });
-  if (tags) {
-    const tagArray = Array.isArray(tags) ? tags : [tags];
-    totalQuery.find({ tags: { $in: tagArray } });
-  }
-  if (featured !== undefined) totalQuery.find({ featured: featured === 'true' });
-  if (onSale !== undefined) totalQuery.find({ onSale: onSale === 'true' });
-  if (inStock) {
-    totalQuery.find({
-      $or: [
-        { trackQuantity: false },
-        { trackQuantity: true, quantity: { $gt: 0 } }
-      ]
-    });
-  }
-  if (search) {
-    totalQuery.find({ $text: { $search: search } });
-  }
-
   const total = await totalQuery.countDocuments();
 
   res.status(200).json({
