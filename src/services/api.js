@@ -132,20 +132,20 @@ export const categoriesAPI = {
   getById: (id) => apiClient.get(`/categories/${id}`),
 }
 
-// Mock API for development (remove in production)
+// Development helper - Mock API fallback when backend is not running
 export const mockAPI = {
-  // Mock login
+  // Mock login - fallback for demo
   login: async (credentials) => {
     await new Promise(resolve => setTimeout(resolve, 1000))
     
-    if (credentials.email === 'admin@arvis.com' && credentials.password === 'admin123') {
+    if (credentials.email === 'admin@arviscollection.com' && credentials.password === 'admin123') {
       return {
         data: {
           token: 'mock-jwt-token-admin',
           user: {
             id: 1,
             name: 'Admin User',
-            email: 'admin@arvis.com',
+            email: 'admin@arviscollection.com',
             role: 'admin'
           }
         }
@@ -169,7 +169,7 @@ export const mockAPI = {
     throw new Error('Invalid credentials')
   },
   
-  // Mock register
+  // Mock register - fallback for demo
   register: async (userData) => {
     await new Promise(resolve => setTimeout(resolve, 1000))
     
@@ -186,7 +186,7 @@ export const mockAPI = {
     }
   },
   
-  // Mock SSO
+  // Mock SSO - fallback for demo
   ssoLogin: async (provider) => {
     await new Promise(resolve => setTimeout(resolve, 1500))
     

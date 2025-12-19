@@ -32,35 +32,81 @@ A modern, secure, and responsive e-commerce platform built with React for sellin
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React 18, Vite
-- **Styling**: Tailwind CSS
-- **State Management**: Zustand
-- **Routing**: React Router v6
-- **Forms**: React Hook Form
-- **Animations**: Framer Motion
-- **HTTP Client**: Axios
-- **Icons**: Lucide React
-- **Notifications**: React Hot Toast
+### Frontend
+- **React 18** with Vite for fast development
+- **Tailwind CSS** for responsive styling
+- **Zustand** for state management
+- **React Router v6** for navigation
+- **React Hook Form** for form handling
+- **Framer Motion** for animations
+- **Axios** for API communication
+- **Lucide React** for icons
+
+### Backend
+- **Node.js** with Express.js framework
+- **MongoDB** with Mongoose ODM
+- **JWT** for authentication
+- **Bcrypt** for password hashing
+- **Nodemailer** for email services
+- **Cloudinary** for image management
+- **Helmet** for security headers
+- **Rate limiting** for API protection
 
 ## 📦 Installation
 
-1. Clone the repository:
+### Frontend Setup
+
+1. **Clone the repository:**
 ```bash
 git clone https://github.com/phasage/Arvi-Collections.git
 cd Arvi-Collections
 ```
 
-2. Install dependencies:
+2. **Install frontend dependencies:**
 ```bash
 npm install
 ```
 
-3. Start the development server:
+3. **Start the frontend development server:**
 ```bash
 npm run dev
 ```
 
-4. Open your browser and navigate to `http://localhost:3000`
+### Backend Setup
+
+1. **Navigate to backend directory:**
+```bash
+cd backend
+```
+
+2. **Install backend dependencies:**
+```bash
+npm install
+```
+
+3. **Setup environment variables:**
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+4. **Start MongoDB** (locally or use MongoDB Atlas)
+
+5. **Seed the database:**
+```bash
+npm run seed
+```
+
+6. **Start the backend server:**
+```bash
+npm run dev
+```
+
+### Full Stack Development
+
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5000
+- **API Health Check**: http://localhost:5000/api/health
 
 ## 🏗️ Build for Production
 
@@ -71,12 +117,14 @@ npm run build
 ## 🔑 Demo Credentials
 
 ### Admin Account
-- **Email**: admin@arvis.com
+- **Email**: admin@arviscollection.com
 - **Password**: admin123
 
-### Regular User Account
-- **Email**: user@demo.com
-- **Password**: password
+### Regular User Accounts
+- **Email**: john@example.com
+- **Password**: password123
+- **Email**: jane@example.com  
+- **Password**: password123
 
 ## 📁 Project Structure
 

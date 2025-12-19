@@ -25,8 +25,15 @@ const Login = () => {
   const onSubmit = async (data) => {
     setIsLoading(true)
     try {
-      // Using mock API for demo - replace with real API
-      const response = await mockAPI.login(data)
+      // Try real API first, fallback to mock for demo
+      let response
+      try {
+        response = await authAPI.login(data)
+      } catch (error) {
+        // Fallback to mock API if backend is not running
+        console.log('Backend not available, using mock API')
+        response = await mockAPI.login(data)
+      }
       
       // Simulate the auth store login
       useAuthStore.setState({
@@ -48,8 +55,15 @@ const Login = () => {
   const handleSSOLogin = async (provider) => {
     setIsLoading(true)
     try {
-      // Using mock API for demo
-      const response = await mockAPI.ssoLogin(provider)
+      // Try real API first, fallback to mock for demo
+      let response
+      try {
+        response = await authAPI.ssoLogin(provider, 'demo-token')
+      } catch (error) {
+        // Fallback to mock API if backend is not running
+        console.log('Backend not available, using mock API')
+        response = await mockAPI.ssoLogin(provider)
+      }
       
       useAuthStore.setState({
         user: response.data.user,
@@ -217,8 +231,8 @@ const Login = () => {
           {/* Demo Credentials */}
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
             <p className="text-xs text-gray-600 mb-2">Demo Credentials:</p>
-            <p className="text-xs text-gray-500">Admin: admin@arvis.com / admin123</p>
-            <p className="text-xs text-gray-500">User: user@demo.com / password</p>
+            <p className="text-xs text-gray-500">Admin: admin@arviscollection.com / admin123</p>
+            <p className="text-xs text-gray-500">User: john@example.com / password123</p>
           </div>
         </div>
       </motion.div>
