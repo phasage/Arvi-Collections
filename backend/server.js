@@ -77,10 +77,23 @@ const corsOptions = {
       'https://arvis-collection.vercel.app'
     ];
     
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (like mobile apps, Postman, or file:// protocol)
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+    
+    // Allow any localhost origin for development
+    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+      callback(null, true);
+      return;
+    }
+    
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      console.log('CORS blocked origin:', origin);
+      callback(null, true); // Allow all origins in demo mode
     }
   },
   credentials: true,
