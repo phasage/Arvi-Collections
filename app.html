@@ -375,6 +375,19 @@
             </div>
         </section>
 
+        <!-- Debug Test Section -->
+        <div style="background: #fff3cd; padding: 15px; margin-bottom: 20px; border-radius: 10px; text-align: center;">
+            <h4>🔍 UI Test</h4>
+            <button onclick="alert('✅ Clicks are working! Backend status: ' + (typeof API_BASE !== 'undefined' ? 'Ready' : 'Not ready'))" 
+                    style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px;">
+                Test Click
+            </button>
+            <button onclick="console.log('🔍 Debug info:', {API_BASE, currentUser, cart}); alert('Check browser console (F12) for debug info')" 
+                    style="background: #17a2b8; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px;">
+                Debug Info
+            </button>
+        </div>
+
         <!-- Auth Section -->
         <div class="auth-section" id="authSection" style="display: none;">
             <h3>🔐 Login to Your Account</h3>
@@ -422,15 +435,39 @@
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
-            loadCategories();
-            loadProducts();
-            updateCartCount();
+            console.log('🚀 App initializing...');
+            try {
+                loadCategories();
+                loadProducts();
+                updateCartCount();
+                console.log('✅ App initialized successfully');
+            } catch (error) {
+                console.error('❌ App initialization failed:', error);
+                alert('App initialization failed: ' + error.message);
+            }
+        });
+
+        // Global error handler
+        window.addEventListener('error', function(event) {
+            console.error('❌ JavaScript Error:', event.error);
+            alert('JavaScript Error: ' + event.message);
         });
 
         // Auth functions
         function toggleAuth() {
-            const authSection = document.getElementById('authSection');
-            authSection.style.display = authSection.style.display === 'none' ? 'block' : 'none';
+            console.log('🔐 toggleAuth clicked');
+            try {
+                const authSection = document.getElementById('authSection');
+                if (!authSection) {
+                    console.error('❌ authSection element not found');
+                    return;
+                }
+                authSection.style.display = authSection.style.display === 'none' ? 'block' : 'none';
+                console.log('✅ Auth section toggled');
+            } catch (error) {
+                console.error('❌ toggleAuth error:', error);
+                alert('Auth toggle error: ' + error.message);
+            }
         }
 
         async function login() {
@@ -627,8 +664,15 @@
         }
 
         function toggleCart() {
-            if (cart.length === 0) {
-                showNotification('Your cart is empty!');
+            console.log('🛒 toggleCart clicked');
+            try {
+                if (cart.length === 0) {
+                    showNotification('Your cart is empty!');
+                    return;
+                }
+            } catch (error) {
+                console.error('❌ toggleCart error:', error);
+                alert('Cart toggle error: ' + error.message);
                 return;
             }
             
@@ -686,7 +730,19 @@
 
         // Utility functions
         function scrollToProducts() {
-            document.getElementById('productsSection').scrollIntoView({ behavior: 'smooth' });
+            console.log('📜 scrollToProducts clicked');
+            try {
+                const productsSection = document.getElementById('productsSection');
+                if (!productsSection) {
+                    console.error('❌ productsSection element not found');
+                    return;
+                }
+                productsSection.scrollIntoView({ behavior: 'smooth' });
+                console.log('✅ Scrolled to products');
+            } catch (error) {
+                console.error('❌ scrollToProducts error:', error);
+                alert('Scroll error: ' + error.message);
+            }
         }
 
         function showNotification(message) {

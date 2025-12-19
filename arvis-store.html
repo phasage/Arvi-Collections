@@ -1,0 +1,3819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arvi's Collection - Premium Fashion Store</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f093fb;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --bg-light: #f7fafc;
+            --white: #ffffff;
+            --success: #48bb78;
+            --warning: #ed8936;
+            --error: #f56565;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1), 0 10px 10px rgba(0,0,0,0.04);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--bg-light);
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--white);
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
+        }
+
+        .header.scrolled {
+            padding: 0.5rem 0;
+            background: rgba(102, 126, 234, 0.95);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, var(--accent-color), var(--white));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-menu a:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-icon {
+            position: relative;
+            cursor: pointer;
+            padding: 0.75rem;
+            border-radius: 50%;
+            transition: var(--transition);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-icon:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
+        }
+
+        .nav-icon i {
+            font-size: 1.25rem;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--error);
+            color: var(--white);
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9)), 
+                        url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&h=800&fit=crop') center/cover;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(240, 147, 251, 0.1));
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        .hero-content {
+            max-width: 800px;
+            z-index: 2;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, var(--white), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+            color: var(--white);
+            border: none;
+            padding: 1.25rem 3rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-lg);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 0;
+            padding: 0;
+        }
+
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 4rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Categories Grid */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 5rem;
+        }
+
+        .category-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            height: 300px;
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 1;
+        }
+
+        .category-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .category-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .category-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .category-info {
+            padding: 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .category-info h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .category-info p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .product-image {
+            position: relative;
+            overflow: hidden;
+            height: 250px;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.1);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: var(--error);
+            color: var(--white);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .product-actions {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: var(--transition);
+        }
+
+        .product-card:hover .product-actions {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: var(--white);
+            color: var(--text-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            transform: scale(1.1);
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-info h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .product-info p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .product-price {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .current-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .original-price {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            text-decoration: line-through;
+        }
+
+        .discount {
+            background: var(--success);
+            color: var(--white);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-to-cart::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .add-to-cart:hover::before {
+            left: 100%;
+        }
+
+        .add-to-cart:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Auth Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: var(--shadow-xl);
+            transform: scale(0.9);
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--text-dark);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-dark);
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-light);
+        }
+
+        /* Cart Sidebar */
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: var(--white);
+            box-shadow: var(--shadow-xl);
+            z-index: 2000;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-sidebar.active {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: var(--transition);
+        }
+
+        .close-cart:hover {
+            color: var(--text-dark);
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            transition: var(--transition);
+        }
+
+        .cart-item:hover {
+            background: var(--bg-light);
+        }
+
+        .cart-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: var(--border-radius);
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-info h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text-dark);
+        }
+
+        .cart-item-price {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #e2e8f0;
+            background: var(--white);
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .quantity-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
+        }
+
+        .cart-footer {
+            padding: 2rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: linear-gradient(45deg, var(--success), #38a169);
+            color: var(--white);
+            border: none;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 2rem;
+            background: var(--success);
+            color: var(--white);
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            z-index: 3000;
+            transform: translateX(400px);
+            transition: var(--transition);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--error);
+        }
+
+        .notification.warning {
+            background: var(--warning);
+        }
+
+        /* Loading States */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+            
+            .section {
+                padding: 3rem 1rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .categories-grid,
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cart-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .nav-container {
+                padding: 0 1rem;
+            }
+        }
+
+        /* User Info Display */
+        .user-info {
+            background: linear-gradient(45deg, var(--success), #38a169);
+            color: var(--white);
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .user-info.show {
+            display: block;
+        }
+
+        .user-info h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .user-info p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: var(--white);
+            padding: 1.5rem 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 3rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e2e8f0;
+            background: var(--white);
+            color: var(--text-dark);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
+        }
+
+        /* Admin Panel Styles */
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: var(--white);
+            z-index: 2500;
+            overflow-y: auto;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .admin-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .admin-tabs {
+            display: flex;
+            background: var(--bg-light);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 2rem;
+        }
+
+        .admin-tab {
+            background: none;
+            border: none;
+            padding: 1rem 2rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+        }
+
+        .admin-tab.active,
+        .admin-tab:hover {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .admin-content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .admin-tab-content {
+            display: none;
+        }
+
+        .admin-tab-content.active {
+            display: block;
+        }
+
+        .admin-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .admin-section-header h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .admin-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .admin-search,
+        .admin-select {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .admin-search {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .admin-search:focus,
+        .admin-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .admin-table-container {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .admin-table th {
+            background: var(--bg-light);
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .admin-table tbody tr:hover {
+            background: var(--bg-light);
+        }
+
+        .admin-table img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: var(--border-radius);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .admin-btn {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin-btn-edit {
+            background: var(--warning);
+            color: var(--white);
+        }
+
+        .admin-btn-delete {
+            background: var(--error);
+            color: var(--white);
+        }
+
+        .admin-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .large-modal .modal {
+            max-width: 800px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        /* Analytics Styles */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .analytics-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .analytics-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .analytics-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.5rem;
+        }
+
+        .analytics-info h4 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .analytics-info p {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .analytics-charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .chart-container {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+        }
+
+        .chart-container h4 {
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            border: 2px dashed #e2e8f0;
+            border-radius: var(--border-radius);
+        }
+
+        .chart-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .activity-log {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item i {
+            width: 30px;
+            text-align: center;
+        }
+
+        .activity-item span {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .activity-item small {
+            color: var(--text-light);
+        }
+
+        .text-success { color: var(--success); }
+        .text-warning { color: var(--warning); }
+        .text-info { color: var(--primary-color); }
+
+        /* Additional Admin Styles */
+        .admin-actions-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .settings-section {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+        }
+
+        .settings-section h4 {
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .settings-section h4 i {
+            color: var(--primary-color);
+        }
+
+        .order-status-pending { background: #fff3cd; color: #856404; }
+        .order-status-processing { background: #cce5ff; color: #004085; }
+        .order-status-shipped { background: #d4edda; color: #155724; }
+        .order-status-delivered { background: #d1ecf1; color: #0c5460; }
+        .order-status-cancelled { background: #f8d7da; color: #721c24; }
+
+        .order-items {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .order-total {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .quick-stat {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+        }
+
+        .quick-stat h4 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .quick-stat p {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .inventory-alerts {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        .inventory-alerts h4 {
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-left: 4px solid var(--warning);
+            background: #fff3cd;
+            margin-bottom: 0.5rem;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+
+        .alert-item i {
+            color: var(--warning);
+        }
+
+        .bulk-actions {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .bulk-actions select {
+            padding: 0.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--border-radius);
+        }
+
+        .product-preview {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+        }
+
+        .product-preview img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: var(--border-radius);
+        }
+
+        .product-preview-info h5 {
+            margin-bottom: 0.25rem;
+            color: var(--text-dark);
+        }
+
+        .product-preview-info p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Enhanced Auth Styles */
+        .auth-toggle {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .auth-toggle a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-toggle a:hover {
+            text-decoration: underline;
+        }
+
+        .password-hint {
+            color: var(--text-light);
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        .mfa-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .mfa-header i {
+            font-size: 3rem;
+            color: var(--success);
+            margin-bottom: 1rem;
+        }
+
+        .mfa-header h4 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .mfa-header p {
+            color: var(--text-light);
+        }
+
+        .mfa-timer {
+            text-align: center;
+            margin: 1rem 0;
+            padding: 0.75rem;
+            background: var(--bg-light);
+            border-radius: var(--border-radius);
+        }
+
+        .mfa-timer span {
+            font-weight: 600;
+            color: var(--warning);
+        }
+
+        #mfaCode {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* SSO Styles */
+        .sso-section {
+            margin-top: 2rem;
+        }
+
+        .sso-divider {
+            text-align: center;
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .sso-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        .sso-divider span {
+            background: var(--white);
+            padding: 0 1rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .sso-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .sso-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            background: var(--white);
+            color: var(--text-dark);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .sso-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .google-btn:hover {
+            border-color: #db4437;
+            color: #db4437;
+        }
+
+        .facebook-btn:hover {
+            border-color: #4267B2;
+            color: #4267B2;
+        }
+
+        .github-btn:hover {
+            border-color: #333;
+            color: #333;
+        }
+
+        .microsoft-btn:hover {
+            border-color: #0078d4;
+            color: #0078d4;
+        }
+
+        .sso-btn i {
+            font-size: 1.2rem;
+        }
+
+        /* Password Strength Indicator */
+        .password-strength {
+            margin-top: 0.5rem;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .strength-fill {
+            height: 100%;
+            transition: var(--transition);
+            border-radius: 2px;
+        }
+
+        .strength-weak { background: var(--error); width: 25%; }
+        .strength-fair { background: var(--warning); width: 50%; }
+        .strength-good { background: #fbbf24; width: 75%; }
+        .strength-strong { background: var(--success); width: 100%; }
+
+        .strength-text {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Email Verification */
+        .verification-notice {
+            background: linear-gradient(45deg, #fef3c7, #fde68a);
+            border: 1px solid #f59e0b;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .verification-notice i {
+            color: #f59e0b;
+            margin-right: 0.5rem;
+        }
+
+        /* Loading States */
+        .auth-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .auth-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e2e8f0;
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @media (max-width: 768px) {
+            .admin-tabs {
+                overflow-x: auto;
+                padding: 0 1rem;
+            }
+            
+            .admin-content {
+                padding: 1rem;
+            }
+            
+            .admin-filters {
+                flex-direction: column;
+            }
+            
+            .admin-search {
+                min-width: auto;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .analytics-charts {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-table-container {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-gem"></i>
+                Arvi's Collection
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#home">Home</a>
+                <a href="#categories">Categories</a>
+                <a href="#products">Products</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+            </nav>
+            
+            <div class="nav-icons">
+                <div class="nav-icon" onclick="toggleSearch()">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="nav-icon" onclick="toggleCart()">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="cart-badge" id="cartBadge">0</span>
+                </div>
+                <div class="nav-icon" onclick="toggleAuth()">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Discover Your Style</h1>
+            <p>Premium fashion collection for the modern lifestyle</p>
+            <button class="cta-button" onclick="scrollToProducts()">
+                Explore Collection
+            </button>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Categories Section -->
+        <section class="section" id="categories">
+            <h2 class="section-title">Shop by Category</h2>
+            <p class="section-subtitle">Discover our curated collections designed for every occasion and style preference</p>
+            
+            <div class="categories-grid" id="categoriesGrid">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading categories...
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section class="section" id="products">
+            <h2 class="section-title">Featured Products</h2>
+            <p class="section-subtitle">Handpicked items from our latest collection, crafted with attention to detail</p>
+            
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <button class="filter-btn active" onclick="filterProducts('all')">All Products</button>
+                <button class="filter-btn" onclick="filterProducts('featured')">Featured</button>
+                <button class="filter-btn" onclick="filterProducts('sale')">On Sale</button>
+                <button class="filter-btn" onclick="filterProducts('new')">New Arrivals</button>
+            </div>
+            
+            <div class="products-grid" id="productsGrid">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading products...
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="adminPanel" style="display: none;">
+        <div class="admin-header">
+            <h2><i class="fas fa-cog"></i> Admin Dashboard</h2>
+            <button class="btn btn-secondary" onclick="toggleAdminPanel()">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+        
+        <div class="admin-tabs">
+            <button class="admin-tab active" onclick="showAdminTab('products')">
+                <i class="fas fa-box"></i> Products
+            </button>
+            <button class="admin-tab" onclick="showAdminTab('categories')">
+                <i class="fas fa-tags"></i> Categories
+            </button>
+            <button class="admin-tab" onclick="showAdminTab('users')">
+                <i class="fas fa-users"></i> Users
+            </button>
+            <button class="admin-tab" onclick="showAdminTab('analytics')">
+                <i class="fas fa-chart-bar"></i> Analytics
+            </button>
+            <button class="admin-tab" onclick="showAdminTab('orders')">
+                <i class="fas fa-shopping-cart"></i> Orders
+            </button>
+            <button class="admin-tab" onclick="showAdminTab('settings')">
+                <i class="fas fa-cog"></i> Settings
+            </button>
+        </div>
+        
+        <div class="admin-content">
+            <!-- Products Management -->
+            <div class="admin-tab-content active" id="adminProducts">
+                <div class="admin-section-header">
+                    <h3>Product Management</h3>
+                    <button class="btn btn-primary" onclick="showAddProductModal()">
+                        <i class="fas fa-plus"></i> Add Product
+                    </button>
+                </div>
+                
+                <div class="admin-filters">
+                    <input type="text" id="productSearch" placeholder="Search products..." 
+                           onkeyup="searchProducts()" class="admin-search">
+                    <select id="categoryFilter" onchange="filterAdminProducts()" class="admin-select">
+                        <option value="">All Categories</option>
+                    </select>
+                    <select id="statusFilter" onchange="filterAdminProducts()" class="admin-select">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                
+                <div class="admin-table-container">
+                    <table class="admin-table" id="productsTable">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <tr>
+                                <td colspan="7" class="loading">Loading products...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Categories Management -->
+            <div class="admin-tab-content" id="adminCategories">
+                <div class="admin-section-header">
+                    <h3>Category Management</h3>
+                    <button class="btn btn-primary" onclick="showAddCategoryModal()">
+                        <i class="fas fa-plus"></i> Add Category
+                    </button>
+                </div>
+                
+                <div class="admin-table-container">
+                    <table class="admin-table" id="categoriesTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Products</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoriesTableBody">
+                            <tr>
+                                <td colspan="5" class="loading">Loading categories...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Users Management -->
+            <div class="admin-tab-content" id="adminUsers">
+                <div class="admin-section-header">
+                    <h3>User Management</h3>
+                    <button class="btn btn-primary" onclick="showAddUserModal()">
+                        <i class="fas fa-plus"></i> Add User
+                    </button>
+                </div>
+                
+                <div class="admin-table-container">
+                    <table class="admin-table" id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Last Login</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr>
+                                <td colspan="6" class="loading">Loading users...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Analytics -->
+            <div class="admin-tab-content" id="adminAnalytics">
+                <div class="admin-section-header">
+                    <h3>Analytics Dashboard</h3>
+                    <button class="btn btn-secondary" onclick="refreshAnalytics()">
+                        <i class="fas fa-sync"></i> Refresh
+                    </button>
+                </div>
+                
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <div class="analytics-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="analytics-info">
+                            <h4 id="totalProducts">0</h4>
+                            <p>Total Products</p>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="analytics-icon">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div class="analytics-info">
+                            <h4 id="totalCategories">0</h4>
+                            <p>Categories</p>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="analytics-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="analytics-info">
+                            <h4 id="totalUsers">0</h4>
+                            <p>Total Users</p>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="analytics-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="analytics-info">
+                            <h4 id="totalRevenue">$0</h4>
+                            <p>Revenue (Demo)</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analytics-charts">
+                    <div class="chart-container">
+                        <h4>Product Distribution by Category</h4>
+                        <div id="categoryChart" class="chart-placeholder">
+                            <i class="fas fa-chart-pie"></i>
+                            <p>Chart visualization would go here</p>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h4>Recent Activity</h4>
+                        <div id="activityLog" class="activity-log">
+                            <div class="activity-item">
+                                <i class="fas fa-plus text-success"></i>
+                                <span>Product "Classic White Shirt" added</span>
+                                <small>2 hours ago</small>
+                            </div>
+                            <div class="activity-item">
+                                <i class="fas fa-edit text-warning"></i>
+                                <span>Category "Men's Fashion" updated</span>
+                                <small>5 hours ago</small>
+                            </div>
+                            <div class="activity-item">
+                                <i class="fas fa-user text-info"></i>
+                                <span>New user registered</span>
+                                <small>1 day ago</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Orders Management -->
+            <div class="admin-tab-content" id="adminOrders">
+                <div class="admin-section-header">
+                    <h3>Order Management</h3>
+                    <div class="admin-actions-group">
+                        <button class="btn btn-secondary" onclick="exportOrders()">
+                            <i class="fas fa-download"></i> Export Orders
+                        </button>
+                        <button class="btn btn-primary" onclick="refreshOrders()">
+                            <i class="fas fa-sync"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="admin-filters">
+                    <input type="text" id="orderSearch" placeholder="Search orders..." 
+                           onkeyup="searchOrders()" class="admin-search">
+                    <select id="orderStatusFilter" onchange="filterOrders()" class="admin-select">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                    <input type="date" id="orderDateFrom" onchange="filterOrders()" class="admin-select">
+                    <input type="date" id="orderDateTo" onchange="filterOrders()" class="admin-select">
+                </div>
+                
+                <div class="admin-table-container">
+                    <table class="admin-table" id="ordersTable">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <tr>
+                                <td colspan="7" class="loading">Loading orders...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Settings -->
+            <div class="admin-tab-content" id="adminSettings">
+                <div class="admin-section-header">
+                    <h3>Store Settings</h3>
+                    <button class="btn btn-primary" onclick="saveSettings()">
+                        <i class="fas fa-save"></i> Save Settings
+                    </button>
+                </div>
+                
+                <div class="settings-grid">
+                    <div class="settings-section">
+                        <h4><i class="fas fa-store"></i> Store Information</h4>
+                        <div class="form-group">
+                            <label for="storeName">Store Name</label>
+                            <input type="text" id="storeName" value="Arvi's Collection">
+                        </div>
+                        <div class="form-group">
+                            <label for="storeDescription">Store Description</label>
+                            <textarea id="storeDescription" rows="3">Premium fashion collection for the modern lifestyle</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="storeEmail">Contact Email</label>
+                            <input type="email" id="storeEmail" value="contact@arviscollection.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="storePhone">Phone Number</label>
+                            <input type="tel" id="storePhone" value="+1 (555) 123-4567">
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h4><i class="fas fa-palette"></i> Appearance</h4>
+                        <div class="form-group">
+                            <label for="primaryColor">Primary Color</label>
+                            <input type="color" id="primaryColor" value="#667eea">
+                        </div>
+                        <div class="form-group">
+                            <label for="secondaryColor">Secondary Color</label>
+                            <input type="color" id="secondaryColor" value="#764ba2">
+                        </div>
+                        <div class="form-group">
+                            <label for="logoUrl">Logo URL</label>
+                            <input type="url" id="logoUrl" placeholder="https://example.com/logo.png">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="darkMode"> Enable Dark Mode
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h4><i class="fas fa-shipping-fast"></i> Shipping & Payment</h4>
+                        <div class="form-group">
+                            <label for="freeShippingThreshold">Free Shipping Threshold ($)</label>
+                            <input type="number" id="freeShippingThreshold" value="50" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="shippingRate">Standard Shipping Rate ($)</label>
+                            <input type="number" id="shippingRate" value="9.99" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="taxRate">Tax Rate (%)</label>
+                            <input type="number" id="taxRate" value="8.5" min="0" max="100" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="currency">Currency</label>
+                            <select id="currency">
+                                <option value="USD">USD - US Dollar</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="GBP">GBP - British Pound</option>
+                                <option value="CAD">CAD - Canadian Dollar</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h4><i class="fas fa-bell"></i> Notifications</h4>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="emailNotifications" checked> Email Notifications
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="lowStockAlerts" checked> Low Stock Alerts
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="orderNotifications" checked> New Order Notifications
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label for="lowStockThreshold">Low Stock Threshold</label>
+                            <input type="number" id="lowStockThreshold" value="10" min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h4><i class="fas fa-shield-alt"></i> Security</h4>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="twoFactorAuth"> Enable Two-Factor Authentication
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="loginAttemptLimit" checked> Limit Login Attempts
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label for="sessionTimeout">Session Timeout (minutes)</label>
+                            <input type="number" id="sessionTimeout" value="60" min="5" max="480">
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-warning" onclick="resetAdminPassword()">
+                                <i class="fas fa-key"></i> Reset Admin Password
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h4><i class="fas fa-database"></i> Data Management</h4>
+                        <div class="form-group">
+                            <button class="btn btn-primary" onclick="exportData()">
+                                <i class="fas fa-download"></i> Export All Data
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-warning" onclick="clearCache()">
+                                <i class="fas fa-trash"></i> Clear Cache
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-danger" onclick="resetStore()">
+                                <i class="fas fa-exclamation-triangle"></i> Reset Store Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal">
+            <h3 id="authTitle">Welcome Back</h3>
+            
+            <div class="user-info" id="userInfo">
+                <h4 id="userName"></h4>
+                <p id="userDetails"></p>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="authForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" value="admin@arviscollection.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" value="admin123" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="rememberMe"> Remember me
+                    </label>
+                </div>
+                
+                <div class="auth-buttons">
+                    <button type="submit" class="btn btn-primary" id="authSubmitBtn">Sign In</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAuth()">Cancel</button>
+                </div>
+                
+                <div class="auth-toggle">
+                    <p>Don't have an account? <a href="#" onclick="toggleAuthMode()">Sign Up</a></p>
+                    <p><a href="#" onclick="showForgotPassword()">Forgot Password?</a></p>
+                </div>
+            </form>
+            
+            <!-- Registration Form -->
+            <form id="registerForm" style="display: none;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="regFirstName">First Name *</label>
+                        <input type="text" id="regFirstName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="regLastName">Last Name *</label>
+                        <input type="text" id="regLastName" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regEmail">Email Address *</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regPassword">Password *</label>
+                    <input type="password" id="regPassword" required minlength="8" onkeyup="checkPasswordStrength()">
+                    <div class="password-strength" id="passwordStrength" style="display: none;">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <div class="strength-text" id="strengthText"></div>
+                    </div>
+                    <small class="password-hint">Minimum 8 characters with uppercase, lowercase, number, and special character</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regConfirmPassword">Confirm Password *</label>
+                    <input type="password" id="regConfirmPassword" required onkeyup="checkPasswordMatch()">
+                    <small id="passwordMatch" style="display: none;"></small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regPhone">Phone Number</label>
+                    <input type="tel" id="regPhone" placeholder="+1 (555) 123-4567">
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="regMfaEnabled"> Enable Two-Factor Authentication (2FA)
+                    </label>
+                    <small>Receive verification codes via email for enhanced security</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="regNewsletter"> Subscribe to newsletter for updates and offers
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="regTerms" required> I agree to the <a href="#" onclick="showTerms()">Terms of Service</a> and <a href="#" onclick="showPrivacy()">Privacy Policy</a>
+                    </label>
+                </div>
+                
+                <div class="auth-buttons">
+                    <button type="submit" class="btn btn-primary">Create Account</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAuth()">Cancel</button>
+                </div>
+                
+                <div class="auth-toggle">
+                    <p>Already have an account? <a href="#" onclick="toggleAuthMode()">Sign In</a></p>
+                </div>
+            </form>
+            
+            <!-- MFA Verification Form -->
+            <form id="mfaForm" style="display: none;">
+                <div class="mfa-header">
+                    <i class="fas fa-shield-alt"></i>
+                    <h4>Two-Factor Authentication</h4>
+                    <p>Enter the verification code sent to <span id="mfaEmail"></span></p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mfaCode">Verification Code *</label>
+                    <input type="text" id="mfaCode" maxlength="6" placeholder="123456" required autocomplete="one-time-code">
+                </div>
+                
+                <div class="mfa-timer">
+                    <p>Code expires in: <span id="mfaTimer">05:00</span></p>
+                </div>
+                
+                <div class="auth-buttons">
+                    <button type="submit" class="btn btn-primary">Verify Code</button>
+                    <button type="button" class="btn btn-secondary" onclick="resendMfaCode()">Resend Code</button>
+                </div>
+                
+                <div class="auth-toggle">
+                    <p><a href="#" onclick="cancelMfa()">Back to Login</a></p>
+                </div>
+            </form>
+            
+            <!-- Forgot Password Form -->
+            <form id="forgotPasswordForm" style="display: none;">
+                <div class="mfa-header">
+                    <i class="fas fa-key"></i>
+                    <h4>Reset Password</h4>
+                    <p>Enter your email address to receive a password reset link</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="forgotEmail">Email Address *</label>
+                    <input type="email" id="forgotEmail" required>
+                </div>
+                
+                <div class="auth-buttons">
+                    <button type="submit" class="btn btn-primary">Send Reset Link</button>
+                    <button type="button" class="btn btn-secondary" onclick="cancelForgotPassword()">Cancel</button>
+                </div>
+                
+                <div class="auth-toggle">
+                    <p><a href="#" onclick="toggleAuthMode()">Back to Sign In</a></p>
+                </div>
+            </form>
+            
+            <!-- SSO Options -->
+            <div class="sso-section" id="ssoSection">
+                <div class="sso-divider">
+                    <span>Or continue with</span>
+                </div>
+                
+                <div class="sso-buttons">
+                    <button class="sso-btn google-btn" onclick="ssoLogin('google')">
+                        <i class="fab fa-google"></i>
+                        <span>Google</span>
+                    </button>
+                    
+                    <button class="sso-btn facebook-btn" onclick="ssoLogin('facebook')">
+                        <i class="fab fa-facebook-f"></i>
+                        <span>Facebook</span>
+                    </button>
+                    
+                    <button class="sso-btn github-btn" onclick="ssoLogin('github')">
+                        <i class="fab fa-github"></i>
+                        <span>GitHub</span>
+                    </button>
+                    
+                    <button class="sso-btn microsoft-btn" onclick="ssoLogin('microsoft')">
+                        <i class="fab fa-microsoft"></i>
+                        <span>Microsoft</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="auth-buttons" id="loggedInActions" style="display: none;">
+                <button class="btn btn-primary" onclick="logout()">Sign Out</button>
+                <button class="btn btn-primary" onclick="toggleAdminPanel()" id="adminBtn" style="display: none;">
+                    <i class="fas fa-cog"></i> Admin Panel
+                </button>
+                <button class="btn btn-secondary" onclick="closeAuth()">Close</button>
+            </div>
+            
+            <div id="authMessage"></div>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Shopping Cart</h3>
+            <button class="close-cart" onclick="toggleCart()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="cart-items" id="cartItems">
+            <div class="loading">
+                <div class="spinner"></div>
+                Your cart is empty
+            </div>
+        </div>
+        
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">$0.00</span>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">
+                Proceed to Checkout
+            </button>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal large-modal">
+            <h3 id="productModalTitle">Add New Product</h3>
+            
+            <form id="productForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productName">Product Name *</label>
+                        <input type="text" id="productName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productCategory">Category *</label>
+                        <select id="productCategory" required>
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productDescription">Description</label>
+                    <textarea id="productDescription" rows="3"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productPrice">Price *</label>
+                        <input type="number" id="productPrice" step="0.01" min="0" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productComparePrice">Compare Price</label>
+                        <input type="number" id="productComparePrice" step="0.01" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productQuantity">Stock Quantity *</label>
+                        <input type="number" id="productQuantity" min="0" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productBrand">Brand</label>
+                        <input type="text" id="productBrand" value="Arvi's Collection">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productStatus">Status</label>
+                        <select id="productStatus">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productImageUrl">Image URL</label>
+                    <input type="url" id="productImageUrl" placeholder="https://example.com/image.jpg">
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="productFeatured"> Featured Product
+                    </label>
+                    <label style="margin-left: 2rem;">
+                        <input type="checkbox" id="productOnSale"> On Sale
+                    </label>
+                </div>
+                
+                <div class="form-buttons">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Product
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeProductModal()">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal-overlay" id="categoryModal">
+        <div class="modal">
+            <h3 id="categoryModalTitle">Add New Category</h3>
+            
+            <form id="categoryForm">
+                <div class="form-group">
+                    <label for="categoryName">Category Name *</label>
+                    <input type="text" id="categoryName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="categoryDescription">Description</label>
+                    <textarea id="categoryDescription" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="categoryStatus">Status</label>
+                    <select id="categoryStatus">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="categoryFeatured"> Featured Category
+                    </label>
+                </div>
+                
+                <div class="form-buttons">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Category
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Global Variables
+        const API_BASE = 'http://localhost:5000/api';
+        let currentUser = null;
+        let authToken = null;
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let products = [];
+        let categories = [];
+        let users = [];
+        let currentFilter = 'all';
+        let currentEditingProduct = null;
+        let currentEditingCategory = null;
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Arvi\'s Collection initializing...');
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            try {
+                // Add scroll effect to header
+                window.addEventListener('scroll', handleScroll);
+                
+                // Load data
+                await loadCategories();
+                await loadProducts();
+                
+                // Update cart display
+                updateCartDisplay();
+                
+                // Setup auth form
+                setupAuthForm();
+                
+                console.log('✅ App initialized successfully');
+                showNotification('Welcome to Arvi\'s Collection!', 'success');
+            } catch (error) {
+                console.error('❌ App initialization failed:', error);
+                showNotification('Failed to load store data', 'error');
+            }
+        }
+
+        // Header Scroll Effect
+        function handleScroll() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        }
+
+        // Load Categories
+        async function loadCategories() {
+            try {
+                const response = await fetch(`${API_BASE}/categories`);
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    categories = data.data;
+                    renderCategories(categories);
+                } else {
+                    throw new Error('Failed to load categories');
+                }
+            } catch (error) {
+                console.error('Categories error:', error);
+                document.getElementById('categoriesGrid').innerHTML = `
+                    <div class="loading">
+                        <i class="fas fa-exclamation-triangle" style="color: var(--error); margin-right: 0.5rem;"></i>
+                        Failed to load categories
+                    </div>
+                `;
+            }
+        }
+
+        function renderCategories(categoriesData) {
+            const grid = document.getElementById('categoriesGrid');
+            grid.innerHTML = categoriesData.map(category => `
+                <div class="category-card" onclick="filterByCategory('${category._id}')">
+                    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=200&fit=crop" 
+                         alt="${category.name}" loading="lazy">
+                    <div class="category-info">
+                        <h3>${category.name}</h3>
+                        <p>${category.description}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load Products
+        async function loadProducts() {
+            try {
+                const response = await fetch(`${API_BASE}/products`);
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    products = data.data;
+                    renderProducts(products);
+                } else {
+                    throw new Error('Failed to load products');
+                }
+            } catch (error) {
+                console.error('Products error:', error);
+                document.getElementById('productsGrid').innerHTML = `
+                    <div class="loading">
+                        <i class="fas fa-exclamation-triangle" style="color: var(--error); margin-right: 0.5rem;"></i>
+                        Failed to load products
+                    </div>
+                `;
+            }
+        }
+
+        function renderProducts(productsData) {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = productsData.map(product => {
+                const discount = product.comparePrice ? 
+                    Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100) : 0;
+                
+                return `
+                    <div class="product-card" data-product-id="${product._id}">
+                        <div class="product-image">
+                            <img src="${product.images?.[0]?.url || 'https://via.placeholder.com/300'}" 
+                                 alt="${product.name}" loading="lazy">
+                            ${product.onSale ? '<div class="product-badge">Sale</div>' : ''}
+                            ${product.featured ? '<div class="product-badge" style="background: var(--warning);">Featured</div>' : ''}
+                            
+                            <div class="product-actions">
+                                <button class="action-btn" onclick="quickView('${product._id}')" title="Quick View">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn" onclick="addToWishlist('${product._id}')" title="Add to Wishlist">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="product-info">
+                            <h3>${product.name}</h3>
+                            <p>${product.shortDescription || product.description?.substring(0, 100) + '...' || 'Premium quality product'}</p>
+                            
+                            <div class="product-price">
+                                <span class="current-price">$${product.price}</span>
+                                ${product.comparePrice ? `<span class="original-price">$${product.comparePrice}</span>` : ''}
+                                ${discount > 0 ? `<span class="discount">${discount}% OFF</span>` : ''}
+                            </div>
+                            
+                            <button class="add-to-cart" onclick="addToCart('${product._id}')">
+                                <i class="fas fa-shopping-bag" style="margin-right: 0.5rem;"></i>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filter Products
+        function filterProducts(filter) {
+            currentFilter = filter;
+            
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            let filteredProducts = products;
+            
+            switch(filter) {
+                case 'featured':
+                    filteredProducts = products.filter(p => p.featured);
+                    break;
+                case 'sale':
+                    filteredProducts = products.filter(p => p.onSale);
+                    break;
+                case 'new':
+                    // Assuming products created in last 30 days are new
+                    const thirtyDaysAgo = new Date();
+                    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                    filteredProducts = products.filter(p => new Date(p.createdAt) > thirtyDaysAgo);
+                    break;
+                default:
+                    filteredProducts = products;
+            }
+            
+            renderProducts(filteredProducts);
+            showNotification(`Showing ${filteredProducts.length} products`, 'success');
+        }
+
+        function filterByCategory(categoryId) {
+            const filteredProducts = products.filter(p => p.category === categoryId);
+            renderProducts(filteredProducts);
+            
+            const category = categories.find(c => c._id === categoryId);
+            showNotification(`Showing ${category?.name} products`, 'success');
+            
+            // Scroll to products section
+            scrollToProducts();
+        }
+
+        // Cart Functions
+        function addToCart(productId) {
+            const product = products.find(p => p._id === productId);
+            if (!product) return;
+            
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: productId,
+                    name: product.name,
+                    price: product.price,
+                    image: product.images?.[0]?.url || 'https://via.placeholder.com/100',
+                    quantity: 1
+                });
+            }
+            
+            updateCartDisplay();
+            saveCart();
+            showNotification(`${product.name} added to cart!`, 'success');
+            
+            // Add animation to cart icon
+            const cartIcon = document.querySelector('.nav-icon i.fa-shopping-bag').parentElement;
+            cartIcon.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                cartIcon.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartDisplay();
+            saveCart();
+            showNotification('Item removed from cart', 'warning');
+        }
+
+        function updateQuantity(productId, change) {
+            const item = cart.find(item => item.id === productId);
+            if (!item) return;
+            
+            item.quantity += change;
+            
+            if (item.quantity <= 0) {
+                removeFromCart(productId);
+                return;
+            }
+            
+            updateCartDisplay();
+            saveCart();
+        }
+
+        function updateCartDisplay() {
+            const badge = document.getElementById('cartBadge');
+            const itemsContainer = document.getElementById('cartItems');
+            const totalElement = document.getElementById('cartTotal');
+            
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            badge.textContent = totalItems;
+            badge.style.display = totalItems > 0 ? 'flex' : 'none';
+            
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = `
+                    <div class="loading">
+                        <i class="fas fa-shopping-bag" style="font-size: 2rem; color: var(--text-light); margin-bottom: 1rem;"></i>
+                        <p>Your cart is empty</p>
+                    </div>
+                `;
+            } else {
+                itemsContainer.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <img src="${item.image}" alt="${item.name}">
+                        <div class="cart-item-info">
+                            <h4>${item.name}</h4>
+                            <div class="cart-item-price">$${item.price}</div>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" onclick="updateQuantity('${item.id}', -1)">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <span style="margin: 0 0.5rem; font-weight: 600;">${item.quantity}</span>
+                                <button class="quantity-btn" onclick="updateQuantity('${item.id}', 1)">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button class="quantity-btn" onclick="removeFromCart('${item.id}')" 
+                                        style="margin-left: 0.5rem; color: var(--error);">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            totalElement.textContent = `$${totalPrice.toFixed(2)}`;
+        }
+
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        function toggleCart() {
+            const sidebar = document.getElementById('cartSidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Auth Functions
+        function toggleAuth() {
+            const modal = document.getElementById('authModal');
+            modal.classList.toggle('active');
+        }
+
+        function closeAuth() {
+            const modal = document.getElementById('authModal');
+            modal.classList.remove('active');
+        }
+
+        function setupAuthForm() {
+            const loginForm = document.getElementById('authForm');
+            const registerForm = document.getElementById('registerForm');
+            const mfaForm = document.getElementById('mfaForm');
+            const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+            
+            loginForm.addEventListener('submit', handleLogin);
+            registerForm.addEventListener('submit', handleRegister);
+            mfaForm.addEventListener('submit', handleMfaVerification);
+            forgotPasswordForm.addEventListener('submit', handleForgotPassword);
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('authMessage');
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.user) {
+                    currentUser = data.user;
+                    authToken = data.token;
+                    
+                    // Update UI
+                    document.getElementById('userName').textContent = `Welcome, ${data.user.name}!`;
+                    document.getElementById('userDetails').textContent = `Role: ${data.user.role} | Email: ${data.user.email}`;
+                    document.getElementById('userInfo').classList.add('show');
+                    document.getElementById('authForm').style.display = 'none';
+                    document.getElementById('loggedInActions').style.display = 'flex';
+                    
+                    // Show admin button if user is admin
+                    if (data.user.role === 'admin') {
+                        document.getElementById('adminBtn').style.display = 'inline-block';
+                    }
+                    
+                    showNotification(`Welcome back, ${data.user.name}!`, 'success');
+                    messageDiv.innerHTML = '';
+                } else {
+                    throw new Error(data.error || 'Login failed');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                messageDiv.innerHTML = `
+                    <div style="color: var(--error); text-align: center; margin-top: 1rem;">
+                        <i class="fas fa-exclamation-circle"></i> ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            authToken = null;
+            
+            // Reset UI
+            document.getElementById('userInfo').classList.remove('show');
+            document.getElementById('authForm').style.display = 'block';
+            document.getElementById('loggedInActions').style.display = 'none';
+            document.getElementById('authMessage').innerHTML = '';
+            
+            showNotification('Logged out successfully', 'success');
+            closeAuth();
+        }
+
+        // Utility Functions
+        function scrollToProducts() {
+            document.getElementById('products').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                ${message}
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        function quickView(productId) {
+            const product = products.find(p => p._id === productId);
+            if (product) {
+                showNotification(`Quick view: ${product.name}`, 'success');
+                // Here you could open a product detail modal
+            }
+        }
+
+        function addToWishlist(productId) {
+            const product = products.find(p => p._id === productId);
+            if (product) {
+                showNotification(`${product.name} added to wishlist!`, 'success');
+                // Here you could implement wishlist functionality
+            }
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                showNotification('Your cart is empty!', 'warning');
+                return;
+            }
+            
+            if (!currentUser) {
+                showNotification('Please login to checkout', 'warning');
+                toggleAuth();
+                return;
+            }
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            showNotification(`Checkout: $${total.toFixed(2)} - Demo mode active`, 'success');
+            
+            // In a real app, this would redirect to checkout page
+            setTimeout(() => {
+                cart = [];
+                updateCartDisplay();
+                saveCart();
+                toggleCart();
+                showNotification('Order placed successfully! (Demo)', 'success');
+            }, 2000);
+        }
+
+        function toggleSearch() {
+            showNotification('Search functionality coming soon!', 'warning');
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(event) {
+            const authModal = document.getElementById('authModal');
+            const cartSidebar = document.getElementById('cartSidebar');
+            
+            if (event.target === authModal) {
+                closeAuth();
+            }
+            
+            if (!cartSidebar.contains(event.target) && !event.target.closest('.nav-icon')) {
+                if (cartSidebar.classList.contains('active')) {
+                    // Don't close cart if clicking inside it
+                }
+            }
+        });
+
+        // Enhanced Authentication Functions
+        let authMode = 'login'nel() {
+            const panel = document.getElementById('adminPanel');
+            const isVisible = panel.style.display !== 'none';
+            
+            if (isVisible) {
+                panel.style.display = 'none';
+            } else {
+                if (!currentUser || currentUser.role !== 'admin') {
+                    showNotification('Admin access required', 'error');
+                    return;
+                }
+                panel.style.display = 'block';
+                loadAdminData();
+            }
+        }
+
+        function showAdminTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.admin-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.admin-tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`admin${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).classList.add('active');
+            
+            // Load specific data
+            switch(tabName) {
+                case 'products':
+                    loadAdminProducts();
+                    break;
+                case 'categories':
+                    loadAdminCategories();
+                    break;
+                case 'users':
+                    loadAdminUsers();
+                    break;
+                case 'analytics':
+                    loadAnalytics();
+                    break;
+                case 'orders':
+                    loadAdminOrders();
+                    break;
+                case 'settings':
+                    loadSettings();
+                    break;
+            }
+        }
+
+        async function loadAdminData() {
+            await loadAdminProducts();
+            await loadAdminCategories();
+            await loadAdminUsers();
+            populateCategoryFilters();
+            loadAnalytics();
+        }
+
+        async function loadAdminProducts() {
+            try {
+                const tbody = document.getElementById('productsTableBody');
+                tbody.innerHTML = '<tr><td colspan="7" class="loading"><div class="spinner"></div>Loading products...</td></tr>';
+                
+                const response = await fetch(`${API_BASE}/products`);
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    products = data.data;
+                    renderAdminProducts(products);
+                } else {
+                    throw new Error('Failed to load products');
+                }
+            } catch (error) {
+                console.error('Admin products error:', error);
+                document.getElementById('productsTableBody').innerHTML = 
+                    '<tr><td colspan="7" class="loading">Failed to load products</td></tr>';
+            }
+        }
+
+        function renderAdminProducts(productsData) {
+            const tbody = document.getElementById('productsTableBody');
+            
+            if (productsData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="loading">No products found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = productsData.map(product => {
+                const category = categories.find(c => c._id === product.category);
+                return `
+                    <tr>
+                        <td>
+                            <img src="${product.images?.[0]?.url || 'https://via.placeholder.com/50'}" 
+                                 alt="${product.name}">
+                        </td>
+                        <td>
+                            <strong>${product.name}</strong>
+                            <br><small>${product.brand || 'N/A'}</small>
+                        </td>
+                        <td>${category?.name || 'Uncategorized'}</td>
+                        <td>
+                            <strong>$${product.price}</strong>
+                            ${product.comparePrice ? `<br><small style="text-decoration: line-through;">$${product.comparePrice}</small>` : ''}
+                        </td>
+                        <td>${product.quantity || 0}</td>
+                        <td>
+                            <span class="status-badge status-${product.status || 'active'}">
+                                ${product.status || 'active'}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="admin-actions">
+                                <button class="admin-btn admin-btn-edit" onclick="editProduct('${product._id}')" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="admin-btn admin-btn-delete" onclick="deleteProduct('${product._id}')" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function loadAdminCategories() {
+            try {
+                const tbody = document.getElementById('categoriesTableBody');
+                tbody.innerHTML = '<tr><td colspan="5" class="loading"><div class="spinner"></div>Loading categories...</td></tr>';
+                
+                const response = await fetch(`${API_BASE}/categories`);
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    categories = data.data;
+                    renderAdminCategories(categories);
+                } else {
+                    throw new Error('Failed to load categories');
+                }
+            } catch (error) {
+                console.error('Admin categories error:', error);
+                document.getElementById('categoriesTableBody').innerHTML = 
+                    '<tr><td colspan="5" class="loading">Failed to load categories</td></tr>';
+            }
+        }
+
+        function renderAdminCategories(categoriesData) {
+            const tbody = document.getElementById('categoriesTableBody');
+            
+            if (categoriesData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="loading">No categories found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = categoriesData.map(category => {
+                const productCount = products.filter(p => p.category === category._id).length;
+                return `
+                    <tr>
+                        <td><strong>${category.name}</strong></td>
+                        <td>${category.description || 'No description'}</td>
+                        <td>${productCount} products</td>
+                        <td>
+                            <span class="status-badge status-${category.status || 'active'}">
+                                ${category.status || 'active'}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="admin-actions">
+                                <button class="admin-btn admin-btn-edit" onclick="editCategory('${category._id}')" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="admin-btn admin-btn-delete" onclick="deleteCategory('${category._id}')" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function loadAdminUsers() {
+            try {
+                const tbody = document.getElementById('usersTableBody');
+                tbody.innerHTML = '<tr><td colspan="6" class="loading"><div class="spinner"></div>Loading users...</td></tr>';
+                
+                // In demo mode, show demo users
+                if (global?.demoMode || true) {
+                    const demoUsers = [
+                        { _id: '1', name: 'Admin User', email: 'admin@arviscollection.com', role: 'admin', isActive: true, lastLogin: new Date() },
+                        { _id: '2', name: 'John Doe', email: 'john@example.com', role: 'user', isActive: true, lastLogin: new Date(Date.now() - 86400000) },
+                        { _id: '3', name: 'Jane Smith', email: 'jane@example.com', role: 'user', isActive: true, lastLogin: new Date(Date.now() - 172800000) }
+                    ];
+                    users = demoUsers;
+                    renderAdminUsers(users);
+                }
+            } catch (error) {
+                console.error('Admin users error:', error);
+                document.getElementById('usersTableBody').innerHTML = 
+                    '<tr><td colspan="6" class="loading">Failed to load users</td></tr>';
+            }
+        }
+
+        function renderAdminUsers(usersData) {
+            const tbody = document.getElementById('usersTableBody');
+            
+            tbody.innerHTML = usersData.map(user => `
+                <tr>
+                    <td><strong>${user.name}</strong></td>
+                    <td>${user.email}</td>
+                    <td>
+                        <span class="status-badge ${user.role === 'admin' ? 'status-active' : 'status-inactive'}">
+                            ${user.role}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="status-badge status-${user.isActive ? 'active' : 'inactive'}">
+                            ${user.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                    </td>
+                    <td>${user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}</td>
+                    <td>
+                        <div class="admin-actions">
+                            <button class="admin-btn admin-btn-edit" onclick="editUser('${user._id}')" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            ${user.role !== 'admin' ? `
+                                <button class="admin-btn admin-btn-delete" onclick="deleteUser('${user._id}')" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function loadAnalytics() {
+            // Update analytics cards
+            document.getElementById('totalProducts').textContent = products.length;
+            document.getElementById('totalCategories').textContent = categories.length;
+            document.getElementById('totalUsers').textContent = users.length;
+            
+            // Calculate demo revenue
+            const totalRevenue = products.reduce((sum, product) => sum + (product.price * (product.quantity || 0) * 0.1), 0);
+            document.getElementById('totalRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
+        }
+
+        // Product Management Functions
+        function showAddProductModal() {
+            currentEditingProduct = null;
+            document.getElementById('productModalTitle').textContent = 'Add New Product';
+            populateProductCategories();
+            clearProductForm();
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        function editProduct(productId) {
+            const product = products.find(p => p._id === productId);
+            if (!product) return;
+            
+            currentEditingProduct = product;
+            document.getElementById('productModalTitle').textContent = 'Edit Product';
+            populateProductCategories();
+            populateProductForm(product);
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        function populateProductForm(product) {
+            document.getElementById('productName').value = product.name || '';
+            document.getElementById('productCategory').value = product.category || '';
+            document.getElementById('productDescription').value = product.description || '';
+            document.getElementById('productPrice').value = product.price || '';
+            document.getElementById('productComparePrice').value = product.comparePrice || '';
+            document.getElementById('productQuantity').value = product.quantity || '';
+            document.getElementById('productBrand').value = product.brand || '';
+            document.getElementById('productStatus').value = product.status || 'active';
+            document.getElementById('productImageUrl').value = product.images?.[0]?.url || '';
+            document.getElementById('productFeatured').checked = product.featured || false;
+            document.getElementById('productOnSale').checked = product.onSale || false;
+        }
+
+        function clearProductForm() {
+            document.getElementById('productForm').reset();
+            document.getElementById('productBrand').value = "Arvi's Collection";
+            document.getElementById('productStatus').value = 'active';
+        }
+
+        function populateProductCategories() {
+            const select = document.getElementById('productCategory');
+            select.innerHTML = '<option value="">Select Category</option>' +
+                categories.map(cat => `<option value="${cat._id}">${cat.name}</option>`).join('');
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.remove('active');
+            currentEditingProduct = null;
+        }
+
+        // Category Management Functions
+        function showAddCategoryModal() {
+            currentEditingCategory = null;
+            document.getElementById('categoryModalTitle').textContent = 'Add New Category';
+            clearCategoryForm();
+            document.getElementById('categoryModal').classList.add('active');
+        }
+
+        function editCategory(categoryId) {
+            const category = categories.find(c => c._id === categoryId);
+            if (!category) return;
+            
+            currentEditingCategory = category;
+            document.getElementById('categoryModalTitle').textContent = 'Edit Category';
+            populateCategoryForm(category);
+            document.getElementById('categoryModal').classList.add('active');
+        }
+
+        function populateCategoryForm(category) {
+            document.getElementById('categoryName').value = category.name || '';
+            document.getElementById('categoryDescription').value = category.description || '';
+            document.getElementById('categoryStatus').value = category.status || 'active';
+            document.getElementById('categoryFeatured').checked = category.featured || false;
+        }
+
+        function clearCategoryForm() {
+            document.getElementById('categoryForm').reset();
+            document.getElementById('categoryStatus').value = 'active';
+        }
+
+        function closeCategoryModal() {
+            document.getElementById('categoryModal').classList.remove('active');
+            currentEditingCategory = null;
+        }
+
+        // Form Handlers
+        document.getElementById('productForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('productName').value,
+                category: document.getElementById('productCategory').value,
+                description: document.getElementById('productDescription').value,
+                price: parseFloat(document.getElementById('productPrice').value),
+                comparePrice: document.getElementById('productComparePrice').value ? 
+                    parseFloat(document.getElementById('productComparePrice').value) : null,
+                quantity: parseInt(document.getElementById('productQuantity').value),
+                brand: document.getElementById('productBrand').value,
+                status: document.getElementById('productStatus').value,
+                featured: document.getElementById('productFeatured').checked,
+                onSale: document.getElementById('productOnSale').checked,
+                images: document.getElementById('productImageUrl').value ? 
+                    [{ url: document.getElementById('productImageUrl').value, alt: formData.name }] : []
+            };
+            
+            try {
+                if (currentEditingProduct) {
+                    // Update existing product (demo mode)
+                    const index = products.findIndex(p => p._id === currentEditingProduct._id);
+                    if (index !== -1) {
+                        products[index] = { ...products[index], ...formData };
+                        showNotification('Product updated successfully!', 'success');
+                    }
+                } else {
+                    // Add new product (demo mode)
+                    const newProduct = {
+                        _id: String(Date.now()),
+                        ...formData,
+                        createdAt: new Date(),
+                        updatedAt: new Date()
+                    };
+                    products.push(newProduct);
+                    showNotification('Product added successfully!', 'success');
+                }
+                
+                closeProductModal();
+                renderAdminProducts(products);
+                renderProducts(products); // Update main store view
+                
+            } catch (error) {
+                console.error('Product save error:', error);
+                showNotification('Failed to save product', 'error');
+            }
+        });
+
+        document.getElementById('categoryForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('categoryName').value,
+                description: document.getElementById('categoryDescription').value,
+                status: document.getElementById('categoryStatus').value,
+                featured: document.getElementById('categoryFeatured').checked
+            };
+            
+            try {
+                if (currentEditingCategory) {
+                    // Update existing category (demo mode)
+                    const index = categories.findIndex(c => c._id === currentEditingCategory._id);
+                    if (index !== -1) {
+                        categories[index] = { ...categories[index], ...formData };
+                        showNotification('Category updated successfully!', 'success');
+                    }
+                } else {
+                    // Add new category (demo mode)
+                    const newCategory = {
+                        _id: String(Date.now()),
+                        ...formData,
+                        slug: formData.name.toLowerCase().replace(/\s+/g, '-'),
+                        createdAt: new Date(),
+                        updatedAt: new Date()
+                    };
+                    categories.push(newCategory);
+                    showNotification('Category added successfully!', 'success');
+                }
+                
+                closeCategoryModal();
+                renderAdminCategories(categories);
+                renderCategories(categories); // Update main store view
+                populateCategoryFilters();
+                
+            } catch (error) {
+                console.error('Category save error:', error);
+                showNotification('Failed to save category', 'error');
+            }
+        });
+
+        // Delete Functions
+        function deleteProduct(productId) {
+            if (!confirm('Are you sure you want to delete this product?')) return;
+            
+            const index = products.findIndex(p => p._id === productId);
+            if (index !== -1) {
+                const productName = products[index].name;
+                products.splice(index, 1);
+                renderAdminProducts(products);
+                renderProducts(products);
+                showNotification(`Product "${productName}" deleted successfully!`, 'success');
+            }
+        }
+
+        function deleteCategory(categoryId) {
+            const categoryProducts = products.filter(p => p.category === categoryId);
+            if (categoryProducts.length > 0) {
+                showNotification('Cannot delete category with existing products', 'error');
+                return;
+            }
+            
+            if (!confirm('Are you sure you want to delete this category?')) return;
+            
+            const index = categories.findIndex(c => c._id === categoryId);
+            if (index !== -1) {
+                const categoryName = categories[index].name;
+                categories.splice(index, 1);
+                renderAdminCategories(categories);
+                renderCategories(categories);
+                populateCategoryFilters();
+                showNotification(`Category "${categoryName}" deleted successfully!`, 'success');
+            }
+        }
+
+        // Filter Functions
+        function populateCategoryFilters() {
+            const filter = document.getElementById('categoryFilter');
+            filter.innerHTML = '<option value="">All Categories</option>' +
+                categories.map(cat => `<option value="${cat._id}">${cat.name}</option>`).join('');
+        }
+
+        function searchProducts() {
+            const searchTerm = document.getElementById('productSearch').value.toLowerCase();
+            const filteredProducts = products.filter(product => 
+                product.name.toLowerCase().includes(searchTerm) ||
+                product.description?.toLowerCase().includes(searchTerm) ||
+                product.brand?.toLowerCase().includes(searchTerm)
+            );
+            renderAdminProducts(filteredProducts);
+        }
+
+        function filterAdminProducts() {
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            let filteredProducts = products;
+            
+            if (categoryFilter) {
+                filteredProducts = filteredProducts.filter(p => p.category === categoryFilter);
+            }
+            
+            if (statusFilter) {
+                filteredProducts = filteredProducts.filter(p => p.status === statusFilter);
+            }
+            
+            renderAdminProducts(filteredProducts);
+        }
+
+        function refreshAnalytics() {
+            loadAnalytics();
+            showNotification('Analytics refreshed!', 'success');
+        }
+
+        // Orders Management Functions
+        async function loadAdminOrders() {
+            try {
+                const tbody = document.getElementById('ordersTableBody');
+                tbody.innerHTML = '<tr><td colspan="7" class="loading"><div class="spinner"></div>Loading orders...</td></tr>';
+                
+                // Demo orders data
+                const demoOrders = [
+                    {
+                        _id: 'ORD-001',
+                        customer: { name: 'John Doe', email: 'john@example.com' },
+                        items: [
+                            { name: 'Classic White Shirt', quantity: 2, price: 49.99 },
+                            { name: 'Casual Jeans', quantity: 1, price: 69.99 }
+                        ],
+                        total: 169.97,
+                        status: 'delivered',
+                        createdAt: new Date(Date.now() - 86400000 * 2)
+                    },
+                    {
+                        _id: 'ORD-002',
+                        customer: { name: 'Jane Smith', email: 'jane@example.com' },
+                        items: [
+                            { name: 'Elegant Black Dress', quantity: 1, price: 89.99 }
+                        ],
+                        total: 89.99,
+                        status: 'shipped',
+                        createdAt: new Date(Date.now() - 86400000)
+                    },
+                    {
+                        _id: 'ORD-003',
+                        customer: { name: 'Mike Johnson', email: 'mike@example.com' },
+                        items: [
+                            { name: 'Designer Watch', quantity: 1, price: 199.99 },
+                            { name: 'Leather Handbag', quantity: 1, price: 129.99 }
+                        ],
+                        total: 329.98,
+                        status: 'processing',
+                        createdAt: new Date(Date.now() - 3600000 * 6)
+                    },
+                    {
+                        _id: 'ORD-004',
+                        customer: { name: 'Sarah Wilson', email: 'sarah@example.com' },
+                        items: [
+                            { name: 'Summer Blouse', quantity: 3, price: 39.99 }
+                        ],
+                        total: 119.97,
+                        status: 'pending',
+                        createdAt: new Date(Date.now() - 3600000 * 2)
+                    }
+                ];
+                
+                renderAdminOrders(demoOrders);
+                
+            } catch (error) {
+                console.error('Admin orders error:', error);
+                document.getElementById('ordersTableBody').innerHTML = 
+                    '<tr><td colspan="7" class="loading">Failed to load orders</td></tr>';
+            }
+        }
+
+        function renderAdminOrders(ordersData) {
+            const tbody = document.getElementById('ordersTableBody');
+            
+            if (ordersData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="loading">No orders found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = ordersData.map(order => `
+                <tr>
+                    <td><strong>${order._id}</strong></td>
+                    <td>
+                        <strong>${order.customer.name}</strong><br>
+                        <small>${order.customer.email}</small>
+                    </td>
+                    <td>
+                        <div class="order-items">
+                            ${order.items.map(item => `${item.quantity}x ${item.name}`).join('<br>')}
+                        </div>
+                    </td>
+                    <td><span class="order-total">$${order.total.toFixed(2)}</span></td>
+                    <td>
+                        <span class="status-badge order-status-${order.status}">
+                            ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                        </span>
+                    </td>
+                    <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+                    <td>
+                        <div class="admin-actions">
+                            <button class="admin-btn admin-btn-edit" onclick="viewOrder('${order._id}')" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="admin-btn admin-btn-edit" onclick="updateOrderStatus('${order._id}')" title="Update Status">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function searchOrders() {
+            const searchTerm = document.getElementById('orderSearch').value.toLowerCase();
+            // Implementation for order search
+            showNotification('Order search functionality ready for implementation', 'info');
+        }
+
+        function filterOrders() {
+            const statusFilter = document.getElementById('orderStatusFilter').value;
+            const dateFrom = document.getElementById('orderDateFrom').value;
+            const dateTo = document.getElementById('orderDateTo').value;
+            
+            showNotification('Order filtering functionality ready for implementation', 'info');
+        }
+
+        function refreshOrders() {
+            loadAdminOrders();
+            showNotification('Orders refreshed!', 'success');
+        }
+
+        function exportOrders() {
+            showNotification('Order export functionality ready for implementation', 'info');
+        }
+
+        function viewOrder(orderId) {
+            showNotification(`Viewing order ${orderId} - Detail modal ready for implementation`, 'info');
+        }
+
+        function updateOrderStatus(orderId) {
+            showNotification(`Update status for order ${orderId} - Status update modal ready for implementation`, 'info');
+        }
+
+        // Settings Management Functions
+        function loadSettings() {
+            // Load current settings from localStorage or defaults
+            const settings = JSON.parse(localStorage.getItem('storeSettings')) || {};
+            
+            // Populate form fields with current settings
+            document.getElementById('storeName').value = settings.storeName || "Arvi's Collection";
+            document.getElementById('storeDescription').value = settings.storeDescription || "Premium fashion collection for the modern lifestyle";
+            document.getElementById('storeEmail').value = settings.storeEmail || "contact@arviscollection.com";
+            document.getElementById('storePhone').value = settings.storePhone || "+1 (555) 123-4567";
+            document.getElementById('primaryColor').value = settings.primaryColor || "#667eea";
+            document.getElementById('secondaryColor').value = settings.secondaryColor || "#764ba2";
+            document.getElementById('logoUrl').value = settings.logoUrl || "";
+            document.getElementById('darkMode').checked = settings.darkMode || false;
+            document.getElementById('freeShippingThreshold').value = settings.freeShippingThreshold || 50;
+            document.getElementById('shippingRate').value = settings.shippingRate || 9.99;
+            document.getElementById('taxRate').value = settings.taxRate || 8.5;
+            document.getElementById('currency').value = settings.currency || "USD";
+            document.getElementById('emailNotifications').checked = settings.emailNotifications !== false;
+            document.getElementById('lowStockAlerts').checked = settings.lowStockAlerts !== false;
+            document.getElementById('orderNotifications').checked = settings.orderNotifications !== false;
+            document.getElementById('lowStockThreshold').value = settings.lowStockThreshold || 10;
+            document.getElementById('twoFactorAuth').checked = settings.twoFactorAuth || false;
+            document.getElementById('loginAttemptLimit').checked = settings.loginAttemptLimit !== false;
+            document.getElementById('sessionTimeout').value = settings.sessionTimeout || 60;
+        }
+
+        function saveSettings() {
+            const settings = {
+                storeName: document.getElementById('storeName').value,
+                storeDescription: document.getElementById('storeDescription').value,
+                storeEmail: document.getElementById('storeEmail').value,
+                storePhone: document.getElementById('storePhone').value,
+                primaryColor: document.getElementById('primaryColor').value,
+                secondaryColor: document.getElementById('secondaryColor').value,
+                logoUrl: document.getElementById('logoUrl').value,
+                darkMode: document.getElementById('darkMode').checked,
+                freeShippingThreshold: parseFloat(document.getElementById('freeShippingThreshold').value),
+                shippingRate: parseFloat(document.getElementById('shippingRate').value),
+                taxRate: parseFloat(document.getElementById('taxRate').value),
+                currency: document.getElementById('currency').value,
+                emailNotifications: document.getElementById('emailNotifications').checked,
+                lowStockAlerts: document.getElementById('lowStockAlerts').checked,
+                orderNotifications: document.getElementById('orderNotifications').checked,
+                lowStockThreshold: parseInt(document.getElementById('lowStockThreshold').value),
+                twoFactorAuth: document.getElementById('twoFactorAuth').checked,
+                loginAttemptLimit: document.getElementById('loginAttemptLimit').checked,
+                sessionTimeout: parseInt(document.getElementById('sessionTimeout').value)
+            };
+            
+            localStorage.setItem('storeSettings', JSON.stringify(settings));
+            
+            // Apply color changes immediately
+            document.documentElement.style.setProperty('--primary-color', settings.primaryColor);
+            document.documentElement.style.setProperty('--secondary-color', settings.secondaryColor);
+            
+            // Update store name in header
+            document.querySelector('.logo').innerHTML = `<i class="fas fa-gem"></i> ${settings.storeName}`;
+            
+            showNotification('Settings saved successfully!', 'success');
+        }
+
+        function resetAdminPassword() {
+            if (confirm('Are you sure you want to reset the admin password? This will log you out.')) {
+                showNotification('Password reset functionality ready for implementation', 'warning');
+            }
+        }
+
+        function exportData() {
+            const data = {
+                products: products,
+                categories: categories,
+                users: users,
+                settings: JSON.parse(localStorage.getItem('storeSettings')) || {},
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `arvis-collection-data-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            showNotification('Data exported successfully!', 'success');
+        }
+
+        function clearCache() {
+            if (confirm('Are you sure you want to clear all cached data?')) {
+                localStorage.removeItem('cart');
+                localStorage.removeItem('storeSettings');
+                cart = [];
+                updateCartDisplay();
+                showNotification('Cache cleared successfully!', 'success');
+            }
+        }
+
+        function resetStore() {
+            if (confirm('⚠️ WARNING: This will reset all store data including products, categories, and settings. This action cannot be undone. Are you sure?')) {
+                if (confirm('This is your final warning. All data will be permanently lost. Continue?')) {
+                    // Reset all data
+                    localStorage.clear();
+                    cart = [];
+                    products = [];
+                    categories = [];
+                    users = [];
+                    
+                    // Reload the page to reinitialize with default data
+                    showNotification('Store data reset. Reloading...', 'warning');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                }
+            }
+        }
+
+        // Enhanced Analytics with Low Stock Alerts
+        function loadAnalytics() {
+            // Update analytics cards
+            document.getElementById('totalProducts').textContent = products.length;
+            document.getElementById('totalCategories').textContent = categories.length;
+            document.getElementById('totalUsers').textContent = users.length;
+            
+            // Calculate demo revenue
+            const totalRevenue = products.reduce((sum, product) => sum + (product.price * (product.quantity || 0) * 0.1), 0);
+            document.getElementById('totalRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
+            
+            // Add low stock alerts
+            addLowStockAlerts();
+        }
+
+        function addLowStockAlerts() {
+            const settings = JSON.parse(localStorage.getItem('storeSettings')) || {};
+            const lowStockThreshold = settings.lowStockThreshold || 10;
+            const lowStockProducts = products.filter(p => (p.quantity || 0) <= lowStockThreshold);
+            
+            if (lowStockProducts.length > 0) {
+                const alertsHtml = `
+                    <div class="inventory-alerts">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Low Stock Alerts</h4>
+                        ${lowStockProducts.map(product => `
+                            <div class="alert-item">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <div>
+                                    <strong>${product.name}</strong> - Only ${product.quantity || 0} left in stock
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                // Insert alerts before analytics charts
+                const chartsContainer = document.querySelector('.analytics-charts');
+                if (chartsContainer && !document.querySelector('.inventory-alerts')) {
+                    chartsContainer.insertAdjacentHTML('beforebegin', alertsHtml);
+                }
+            }
+        }
+
+        // Bulk Operations (Future Enhancement)
+        function initBulkOperations() {
+            const bulkActionsHtml = `
+                <div class="bulk-actions">
+                    <span><strong>Bulk Actions:</strong></span>
+                    <select id="bulkAction">
+                        <option value="">Select Action</option>
+                        <option value="activate">Activate Selected</option>
+                        <option value="deactivate">Deactivate Selected</option>
+                        <option value="delete">Delete Selected</option>
+                        <option value="export">Export Selected</option>
+                    </select>
+                    <button class="btn btn-secondary" onclick="executeBulkAction()">Apply</button>
+                    <span id="selectedCount">0 items selected</span>
+                </div>
+            `;
+            
+            // This would be inserted into the products tab
+            // Implementation ready for future enhancement
+        }
+
+        function executeBulkAction() {
+            const action = document.getElementById('bulkAction').value;
+            if (!action) {
+                showNotification('Please select an action', 'warning');
+                return;
+            }
+            
+            showNotification(`Bulk ${action} functionality ready for implementation`, 'info');
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeAuth();
+                closeProductModal();
+                closeCategoryModal();
+                if (document.getElementById('cartSidebar').classList.contains('active')) {
+                    toggleCart();
+                }
+                if (document.getElementById('adminPanel').style.display !== 'none') {
+                    toggleAdminPanel();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arvi's Collection - Debug Mode</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo { font-size: 1.8rem; font-weight: 700; }
+        
+        .nav-icons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .nav-icons i {
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-icons i:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
+        }
+        
+        .main-content { margin-top: 80px; padding: 20px; }
+        
+        .debug-panel {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .debug-panel h3 { color: #856404; margin-bottom: 10px; }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px solid #ffeaa7;
+        }
+        
+        .status-item:last-child { border-bottom: none; }
+        
+        .status-good { color: #28a745; }
+        .status-bad { color: #dc3545; }
+        .status-pending { color: #ffc107; }
+        
+        .test-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+        
+        .test-button:hover { background: #0056b3; }
+        
+        .results { margin-top: 20px; }
+        
+        .result-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .result-success { background: #d4edda; border-left-color: #28a745; }
+        .result-error { background: #f8d7da; border-left-color: #dc3545; }
+        .result-info { background: #d1ecf1; border-left-color: #17a2b8; }
+        
+        .categories-grid, .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .card:hover { transform: translateY(-5px); }
+        
+        .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 5px; }
+        .card h3 { margin: 10px 0; }
+        .card p { color: #666; font-size: 0.9rem; }
+        .price { font-size: 1.2rem; font-weight: bold; color: #e74c3c; margin: 10px 0; }
+        
+        .auth-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none;
+        }
+        
+        .auth-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .auth-form input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .loading { text-align: center; padding: 40px; color: #666; }
+        .error { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .success { background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-tshirt"></i> Arvi's Collection - Debug Mode
+            </div>
+            <div class="nav-icons">
+                <i class="fas fa-search" onclick="testClick('Search Icon')" title="Search"></i>
+                <i class="fas fa-shopping-cart" onclick="testClick('Cart Icon')" title="Cart"></i>
+                <i class="fas fa-user" onclick="toggleAuth()" title="User Login"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Debug Panel -->
+        <div class="debug-panel">
+            <h3>🔍 Debug Information</h3>
+            <div class="status-item">
+                <span>JavaScript Status:</span>
+                <span id="jsStatus" class="status-pending">Loading...</span>
+            </div>
+            <div class="status-item">
+                <span>Backend Connection:</span>
+                <span id="backendStatus" class="status-pending">Testing...</span>
+            </div>
+            <div class="status-item">
+                <span>Categories API:</span>
+                <span id="categoriesStatus" class="status-pending">Testing...</span>
+            </div>
+            <div class="status-item">
+                <span>Products API:</span>
+                <span id="productsStatus" class="status-pending">Testing...</span>
+            </div>
+            <div class="status-item">
+                <span>Click Events:</span>
+                <span id="clickStatus" class="status-pending">Not tested</span>
+            </div>
+        </div>
+
+        <!-- Test Section -->
+        <div class="test-section">
+            <h3>🧪 Interactive Tests</h3>
+            <button class="test-button" onclick="testClick('Test Button 1')">Test Click 1</button>
+            <button class="test-button" onclick="testClick('Test Button 2')">Test Click 2</button>
+            <button class="test-button" onclick="testBackend()">Test Backend</button>
+            <button class="test-button" onclick="testAPIs()">Test All APIs</button>
+            <button class="test-button" onclick="loadData()">Load Store Data</button>
+            
+            <div class="results" id="testResults"></div>
+        </div>
+
+        <!-- Auth Section -->
+        <div class="auth-section" id="authSection">
+            <h3>🔐 Login Test</h3>
+            <div class="auth-form">
+                <input type="email" id="email" placeholder="Email" value="admin@arviscollection.com">
+                <input type="password" id="password" placeholder="Password" value="admin123">
+                <button class="test-button" onclick="testLogin()">Test Login</button>
+            </div>
+            <div id="authMessage"></div>
+        </div>
+
+        <!-- Categories Section -->
+        <div class="test-section">
+            <h3>📂 Categories</h3>
+            <div class="categories-grid" id="categoriesGrid">
+                <div class="loading">Click "Load Store Data" to load categories...</div>
+            </div>
+        </div>
+
+        <!-- Products Section -->
+        <div class="test-section">
+            <h3>🛍️ Products</h3>
+            <div class="products-grid" id="productsGrid">
+                <div class="loading">Click "Load Store Data" to load products...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        let testCount = 0;
+
+        // Initialize debug mode
+        document.addEventListener('DOMContentLoaded', function() {
+            addResult('🚀 Debug mode initialized', 'info');
+            updateStatus('jsStatus', 'JavaScript Loaded', 'good');
+            
+            // Auto-test backend connection
+            setTimeout(testBackend, 1000);
+        });
+
+        function updateStatus(elementId, message, status) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = message;
+                element.className = `status-${status}`;
+            }
+        }
+
+        function addResult(message, type = 'info') {
+            const resultsDiv = document.getElementById('testResults');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `result-item result-${type}`;
+            resultDiv.innerHTML = `
+                <strong>${new Date().toLocaleTimeString()}</strong> - ${message}
+            `;
+            resultsDiv.appendChild(resultDiv);
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function testClick(elementName) {
+            testCount++;
+            addResult(`✅ Click Test #${testCount}: ${elementName} clicked successfully!`, 'success');
+            updateStatus('clickStatus', `${testCount} clicks detected`, 'good');
+            console.log(`Debug: ${elementName} clicked`);
+        }
+
+        async function testBackend() {
+            addResult('🔄 Testing backend connection...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    addResult(`✅ Backend connected: ${data.message}`, 'success');
+                    updateStatus('backendStatus', 'Connected', 'good');
+                } else {
+                    addResult(`❌ Backend error: ${response.status}`, 'error');
+                    updateStatus('backendStatus', 'Error', 'bad');
+                }
+            } catch (error) {
+                addResult(`❌ Backend connection failed: ${error.message}`, 'error');
+                updateStatus('backendStatus', 'Failed', 'bad');
+            }
+        }
+
+        async function testAPIs() {
+            addResult('🔄 Testing all APIs...', 'info');
+            
+            // Test Categories
+            try {
+                const response = await fetch(`${API_BASE}/categories`);
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    addResult(`✅ Categories API: ${data.count} categories loaded`, 'success');
+                    updateStatus('categoriesStatus', `${data.count} categories`, 'good');
+                } else {
+                    addResult(`❌ Categories API failed: ${response.status}`, 'error');
+                    updateStatus('categoriesStatus', 'Failed', 'bad');
+                }
+            } catch (error) {
+                addResult(`❌ Categories API error: ${error.message}`, 'error');
+                updateStatus('categoriesStatus', 'Error', 'bad');
+            }
+
+            // Test Products
+            try {
+                const response = await fetch(`${API_BASE}/products`);
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    addResult(`✅ Products API: ${data.count} products loaded`, 'success');
+                    updateStatus('productsStatus', `${data.count} products`, 'good');
+                } else {
+                    addResult(`❌ Products API failed: ${response.status}`, 'error');
+                    updateStatus('productsStatus', 'Failed', 'bad');
+                }
+            } catch (error) {
+                addResult(`❌ Products API error: ${error.message}`, 'error');
+                updateStatus('productsStatus', 'Error', 'bad');
+            }
+        }
+
+        async function loadData() {
+            addResult('🔄 Loading store data...', 'info');
+            
+            try {
+                // Load Categories
+                const categoriesResponse = await fetch(`${API_BASE}/categories`);
+                const categoriesData = await categoriesResponse.json();
+                
+                if (categoriesData.success && categoriesData.data) {
+                    const categoriesGrid = document.getElementById('categoriesGrid');
+                    categoriesGrid.innerHTML = categoriesData.data.map(category => `
+                        <div class="card" onclick="testClick('Category: ${category.name}')">
+                            <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=200&fit=crop" alt="${category.name}">
+                            <h3>${category.name}</h3>
+                            <p>${category.description}</p>
+                        </div>
+                    `).join('');
+                    addResult(`✅ Loaded ${categoriesData.data.length} categories`, 'success');
+                }
+
+                // Load Products
+                const productsResponse = await fetch(`${API_BASE}/products`);
+                const productsData = await productsResponse.json();
+                
+                if (productsData.success && productsData.data) {
+                    const productsGrid = document.getElementById('productsGrid');
+                    productsGrid.innerHTML = productsData.data.map(product => `
+                        <div class="card" onclick="testClick('Product: ${product.name}')">
+                            <img src="${product.images && product.images[0] ? product.images[0].url : 'https://via.placeholder.com/300'}" alt="${product.name}">
+                            <h3>${product.name}</h3>
+                            <p>${product.shortDescription || 'No description'}</p>
+                            <div class="price">$${product.price}</div>
+                            <button class="test-button" onclick="testClick('Add to Cart: ${product.name}'); event.stopPropagation();">Add to Cart</button>
+                        </div>
+                    `).join('');
+                    addResult(`✅ Loaded ${productsData.data.length} products`, 'success');
+                }
+                
+            } catch (error) {
+                addResult(`❌ Failed to load data: ${error.message}`, 'error');
+            }
+        }
+
+        function toggleAuth() {
+            const authSection = document.getElementById('authSection');
+            const isVisible = authSection.style.display !== 'none';
+            authSection.style.display = isVisible ? 'none' : 'block';
+            testClick(`Auth Section ${isVisible ? 'Hidden' : 'Shown'}`);
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('authMessage');
+            
+            addResult('🔄 Testing login...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success && data.user) {
+                    addResult(`✅ Login successful: Welcome ${data.user.name} (${data.user.role})`, 'success');
+                    messageDiv.innerHTML = `<div class="success">✅ Login successful! Welcome ${data.user.name}</div>`;
+                } else {
+                    addResult(`❌ Login failed: ${data.error || 'Invalid credentials'}`, 'error');
+                    messageDiv.innerHTML = `<div class="error">❌ Login failed: ${data.error || 'Invalid credentials'}</div>`;
+                }
+            } catch (error) {
+                addResult(`❌ Login error: ${error.message}`, 'error');
+                messageDiv.innerHTML = `<div class="error">❌ Login error: ${error.message}</div>`;
+            }
+        }
+
+        // Global error handler
+        window.addEventListener('error', function(event) {
+            addResult(`❌ JavaScript Error: ${event.message}`, 'error');
+            console.error('Debug mode caught error:', event);
+        });
+
+        // Click event logger
+        document.addEventListener('click', function(event) {
+            console.log('Debug: Click detected on', event.target.tagName, event.target.className);
+        });
+    </script>
+</body>
+</html>
