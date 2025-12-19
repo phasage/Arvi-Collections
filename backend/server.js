@@ -4,7 +4,12 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
-const xss = require('xss-clean');
+const DOMPurify = require('dompurify');
+const { JSDOM } = require('jsdom');
+
+// Setup DOMPurify for server-side use
+const window = new JSDOM('').window;
+const purify = DOMPurify(window);
 const hpp = require('hpp');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
@@ -91,8 +96,31 @@ app.use(cookieParser());
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
 
-// Data sanitization against XSS
-app.use(xss());
+// Data sanitization against XSS - handled in middleware
+app.use((req, res, next) => {
+  if (req.body) {
+    req.body = sanitizeObject(req.body);
+  }
+  next();
+});
+
+// XSS sanitization function
+function sanitizeObject(obj) {
+  if (typeof obj === 'string') {
+    return purify.sanitize(obj);
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(item => sanitizeObject(item));
+  }
+  if (typeof obj === 'object' && obj !== null) {
+    const sanitized = {};
+    for (const key in obj) {
+      sanitized[key] = sanitizeObject(obj[key]);
+    }
+    return sanitized;
+  }
+  return obj;
+}
 
 // Prevent parameter pollution
 app.use(hpp({
