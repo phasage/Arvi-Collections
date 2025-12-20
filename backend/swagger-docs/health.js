@@ -2,12 +2,11 @@
  * @swagger
  * /health:
  *   get:
- *     summary: Health check endpoint
- *     tags: [Health]
- *     description: Check the health and status of the API server
+ *     summary: Get server health status
+ *     tags: [Health & Monitoring]
  *     responses:
  *       200:
- *         description: Server is healthy and running
+ *         description: Server health status retrieved successfully
  *         content:
  *           application/json:
  *             schema:
@@ -38,11 +37,44 @@
  *                   properties:
  *                     status:
  *                       type: string
- *                       enum: [connected, disconnected, demo]
+ *                       enum: [demo, connected]
  *                       example: "demo"
  *                     mode:
  *                       type: string
  *                       example: "Demo mode - MongoDB not available"
+ *                 cache:
+ *                   type: object
+ *                   properties:
+ *                     status:
+ *                       type: string
+ *                       enum: [connected, not available]
+ *                       example: "not available"
+ *                     hitRate:
+ *                       type: number
+ *                       minimum: 0
+ *                       maximum: 100
+ *                       example: 85.5
+ *                 imageService:
+ *                   type: object
+ *                   properties:
+ *                     status:
+ *                       type: string
+ *                       enum: [cloudinary, local storage]
+ *                       example: "local storage"
+ *                 performance:
+ *                   type: object
+ *                   properties:
+ *                     averageResponseTime:
+ *                       type: number
+ *                       description: "Average response time in milliseconds"
+ *                       example: 125.5
+ *                     totalRequests:
+ *                       type: integer
+ *                       example: 1250
+ *                     errorRate:
+ *                       type: string
+ *                       description: "Error rate as percentage"
+ *                       example: "2.40"
  *       500:
  *         description: Server error
  *         content:
