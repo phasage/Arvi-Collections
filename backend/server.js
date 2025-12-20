@@ -16,6 +16,9 @@ const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 require('dotenv').config();
 
+// Import Swagger
+const { swaggerUi, specs } = require('./swagger');
+
 // Import routes
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
@@ -203,8 +206,33 @@ app.get('/api/health', (req, res) => {
     success: true,
     message: 'Server is running',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV
+    environment: process.env.NODE_ENV,
+    version: '1.0.0',
+    uptime: process.uptime(),
+    database: {
+      status: global.demoMode ? 'demo' : 'connected',
+      mode: global.demoMode ? 'Demo mode - MongoDB not available' : 'MongoDB connected'
+    }
   });
+});
+
+// Swagger API Documentation
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(specs, {
+  explorer: true,
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: "Arvi's Collection API Documentation",
+  swaggerOptions: {
+    docExpansion: 'none',
+    filter: true,
+    showRequestHeaders: true,
+    showCommonExtensions: true,
+    tryItOutEnabled: true
+  }
+}));
+
+// Redirect /api to docs
+app.get('/api', (req, res) => {
+  res.redirect('/api/docs');
 });
 
 // API routes
