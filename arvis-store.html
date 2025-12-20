@@ -2811,15 +2811,10 @@
         }
 
         function setupAuthForm() {
-            const loginForm = document.getElementById('authForm');
-            const registerForm = document.getElementById('registerForm');
-            const mfaForm = document.getElementById('mfaForm');
-            const forgotPasswordForm = document.getElementById('forgotPasswordForm');
-            
-            loginForm.addEventListener('submit', handleLogin);
-            registerForm.addEventListener('submit', handleRegister);
-            mfaForm.addEventListener('submit', handleMfaVerification);
-            forgotPasswordForm.addEventListener('submit', handleForgotPassword);
+            const form = document.getElementById('authForm');
+            if (form) {
+                form.addEventListener('submit', handleLogin);
+            }
         }
 
         async function handleLogin(event) {
@@ -2971,7 +2966,10 @@
         });
 
         // Enhanced Authentication Functions
-        let authMode = 'login'nel() {
+        let authMode = 'login';
+
+        // Admin Functions
+        function toggleAdminPanel() {
             const panel = document.getElementById('adminPanel');
             const isVisible = panel.style.display !== 'none';
             

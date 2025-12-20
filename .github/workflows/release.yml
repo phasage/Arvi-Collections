@@ -1,0 +1,312 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  NODE_VERSION: '18.x'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Create Release
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.version }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Get version
+      id: get_version
+      run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+    - name: Generate changelog
+      id: changelog
+      uses: metcalfc/changelog-generator@v4.1.0
+      with:
+        myToken: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ steps.get_version.outputs.version }}
+        body: |
+          ## Changes in this Release
+          ${{ steps.changelog.outputs.changelog }}
+          
+          ## Installation
+          
+          ### Docker Images
+          - Backend: `ghcr.io/${{ github.repository }}-backend:${{ steps.get_version.outputs.version }}`
+          - Frontend: `ghcr.io/${{ github.repository }}-frontend:${{ steps.get_version.outputs.version }}`
+          
+          ### Quick Start
+          ```bash
+          # Clone the repository
+          git clone https://github.com/${{ github.repository }}.git
+          cd arvi-collections
+          
+          # Checkout this version
+          git checkout ${{ steps.get_version.outputs.version }}
+          
+          # Install and run
+          npm install
+          cd backend && npm install
+          npm run dev
+          ```
+          
+          ## What's Changed
+          - See the [full changelog](https://github.com/${{ github.repository }}/compare/v1.0.0...${{ steps.get_version.outputs.version }})
+        draft: false
+        prerelease: false
+
+  # Build Release Assets
+  build-assets:
+    name: Build Release Assets
+    runs-on: ubuntu-latest
+    needs: create-release
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        npm ci
+        cd backend && npm ci
+
+    - name: Build frontend
+      run: npm run build
+
+    - name: Create distribution package
+      run: |
+        mkdir -p dist
+        cp -r backend dist/
+        cp -r dist/build dist/frontend
+        cp package.json README.md LICENSE dist/
+        
+        # Create platform-specific archive
+        if [ "${{ matrix.os }}" = "windows-latest" ]; then
+          cd dist && zip -r ../arvis-collection-${{ needs.create-release.outputs.version }}-windows.zip .
+        else
+          cd dist && tar -czf ../arvis-collection-${{ needs.create-release.outputs.version }}-${{ matrix.os }}.tar.gz .
+        fi
+
+    - name: Upload Release Asset (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./arvis-collection-${{ needs.create-release.outputs.version }}-ubuntu-latest.tar.gz
+        asset_name: arvis-collection-${{ needs.create-release.outputs.version }}-linux.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Upload Release Asset (Windows)
+      if: matrix.os == 'windows-latest'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./arvis-collection-${{ needs.create-release.outputs.version }}-windows.zip
+        asset_name: arvis-collection-${{ needs.create-release.outputs.version }}-windows.zip
+        asset_content_type: application/zip
+
+    - name: Upload Release Asset (macOS)
+      if: matrix.os == 'macos-latest'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ./arvis-collection-${{ needs.create-release.outputs.version }}-macos-latest.tar.gz
+        asset_name: arvis-collection-${{ needs.create-release.outputs.version }}-macos.tar.gz
+        asset_content_type: application/gzip
+
+  # Build and Push Release Docker Images
+  build-release-images:
+    name: Build Release Docker Images
+    runs-on: ubuntu-latest
+    needs: create-release
+    
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build and push backend release image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./backend
+        file: ./backend/Dockerfile
+        push: true
+        tags: |
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:${{ needs.create-release.outputs.version }}
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build and push frontend release image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: |
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:${{ needs.create-release.outputs.version }}
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  # Deploy Release to Production
+  deploy-release:
+    name: Deploy Release to Production
+    runs-on: ubuntu-latest
+    needs: [create-release, build-release-images]
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to production
+      run: |
+        echo "Deploying release ${{ needs.create-release.outputs.version }} to production..."
+        # Add your production deployment commands here
+        # Example: Update Kubernetes deployments, Docker Swarm services, etc.
+
+    - name: Update production configuration
+      run: |
+        echo "Updating production configuration for version ${{ needs.create-release.outputs.version }}"
+        # Update configuration files, environment variables, etc.
+
+    - name: Run post-deployment tests
+      run: |
+        echo "Running post-deployment tests..."
+        # Add production health checks and smoke tests
+
+    - name: Notify successful deployment
+      uses: 8398a7/action-slack@v3
+      with:
+        status: success
+        channel: '#releases'
+        text: |
+          🚀 Successfully deployed Arvi's Collection ${{ needs.create-release.outputs.version }} to production!
+          
+          📦 Release: https://github.com/${{ github.repository }}/releases/tag/${{ needs.create-release.outputs.version }}
+          🌐 Production: https://arviscollection.com
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+    - name: Notify failed deployment
+      uses: 8398a7/action-slack@v3
+      if: failure()
+      with:
+        status: failure
+        channel: '#releases'
+        text: |
+          ❌ Failed to deploy Arvi's Collection ${{ needs.create-release.outputs.version }} to production!
+          
+          📦 Release: https://github.com/${{ github.repository }}/releases/tag/${{ needs.create-release.outputs.version }}
+          🔍 Check the deployment logs for details.
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  # Update Documentation
+  update-docs:
+    name: Update Documentation
+    runs-on: ubuntu-latest
+    needs: [create-release, deploy-release]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Generate API documentation
+      run: |
+        cd backend
+        npm ci
+        npm run docs:generate
+        
+    - name: Update version in documentation
+      run: |
+        sed -i 's/version: ".*"/version: "${{ needs.create-release.outputs.version }}"/' backend/swagger.js
+        
+    - name: Commit documentation updates
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git diff --staged --quiet || git commit -m "docs: update documentation for release ${{ needs.create-release.outputs.version }}"
+        git push
+
+  # Security Scan Release
+  security-scan-release:
+    name: Security Scan Release
+    runs-on: ubuntu-latest
+    needs: [build-release-images]
+    
+    steps:
+    - name: Run Trivy vulnerability scanner on backend
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:${{ needs.create-release.outputs.version }}
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
+
+    - name: Run Trivy vulnerability scanner on frontend
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:${{ needs.create-release.outputs.version }}
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'

@@ -16,6 +16,15 @@ const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 require('dotenv').config();
 
+// Import services
+const logger = require('./services/logger');
+const monitoring = require('./services/monitoring');
+const { cache } = require('./services/cache');
+const imageService = require('./services/imageService');
+
+// Import Swagger
+const { swaggerUi, specs } = require('./swagger');
+
 // Import routes
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
@@ -155,8 +164,14 @@ app.use(compression());
 
 // Logging
 if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
+  app.use(morgan('dev', { stream: logger.getStream() }));
+} else {
+  app.use(morgan('combined', { stream: logger.getStream() }));
 }
+
+// Request monitoring middleware
+app.use(monitoring.requestMonitoring());
+app.use(logger.requestLogger());
 
 // Connect to MongoDB
 const connectDB = async () => {
@@ -170,11 +185,10 @@ const connectDB = async () => {
       serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
     });
     
-    console.log('✅ MongoDB connected successfully');
+    logger.info('MongoDB connected successfully', { uri: mongoURI });
     return true;
   } catch (err) {
-    console.log('⚠️  MongoDB not available, using demo mode');
-    console.log('💡 To use full database features, install MongoDB or use MongoDB Atlas');
+    logger.warn('MongoDB not available, using demo mode', { error: err.message });
     
     // Create a simple in-memory mock for demo
     global.demoMode = true;
@@ -195,16 +209,99 @@ connectDB().then(async (connected) => {
     const { initializeDemoData } = require('./utils/demoData');
     await initializeDemoData();
   }
+  
+  // Log startup information
+  logger.info('Server initialization completed', {
+    mongodb: connected ? 'connected' : 'demo mode',
+    redis: cache.isConnected ? 'connected' : 'not available',
+    cloudinary: imageService.isCloudinaryConfigured ? 'configured' : 'local storage',
+    environment: process.env.NODE_ENV
+  });
 });
 
 // Health check route
 app.get('/api/health', (req, res) => {
+  const health = monitoring.getHealthStatus();
   res.status(200).json({
     success: true,
     message: 'Server is running',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV
+    environment: process.env.NODE_ENV,
+    version: '1.0.0',
+    uptime: process.uptime(),
+    database: {
+      status: global.demoMode ? 'demo' : 'connected',
+      mode: global.demoMode ? 'Demo mode - MongoDB not available' : 'MongoDB connected'
+    },
+    cache: {
+      status: cache.isConnected ? 'connected' : 'not available',
+      hitRate: health.cache.hitRate
+    },
+    imageService: {
+      status: imageService.isCloudinaryConfigured ? 'cloudinary' : 'local storage'
+    },
+    performance: {
+      averageResponseTime: health.requests.averageResponseTime,
+      totalRequests: health.requests.total,
+      errorRate: health.requests.total > 0 ? 
+        ((health.requests.errors / health.requests.total) * 100).toFixed(2) : 0
+    }
   });
+});
+
+// Metrics endpoint
+app.get('/api/metrics', (req, res) => {
+  const metrics = monitoring.getMetrics();
+  res.status(200).json({
+    success: true,
+    data: metrics
+  });
+});
+
+// Performance report endpoint
+app.get('/api/performance', (req, res) => {
+  const report = monitoring.getPerformanceReport();
+  res.status(200).json({
+    success: true,
+    data: report
+  });
+});
+
+// Cache stats endpoint
+app.get('/api/cache/stats', async (req, res) => {
+  const stats = await cache.getStats();
+  res.status(200).json({
+    success: true,
+    data: stats
+  });
+});
+
+// Image service status endpoint
+app.get('/api/images/status', (req, res) => {
+  const status = imageService.getStatus();
+  res.status(200).json({
+    success: true,
+    data: status
+  });
+});
+
+// Swagger API Documentation
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(specs, {
+  explorer: true,
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: "Arvi's Collection API Documentation",
+  swaggerOptions: {
+    docExpansion: 'none',
+    filter: true,
+    showRequestHeaders: true,
+    showCommonExtensions: true,
+    tryItOutEnabled: true
+  }
+}));
+
+// Redirect /api to docs
+app.get('/api', (req, res) => {
+  res.redirect('/api/docs');
 });
 
 // API routes
@@ -224,18 +321,26 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Error handling middleware
+app.use(logger.errorLogger());
 app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
 const server = app.listen(PORT, () => {
-  console.log(`🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  logger.info(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`, {
+    port: PORT,
+    environment: process.env.NODE_ENV,
+    pid: process.pid
+  });
 });
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
-  console.log(`❌ Unhandled Rejection: ${err.message}`);
+  logger.error('Unhandled Rejection', {
+    error: err.message,
+    stack: err.stack
+  });
   server.close(() => {
     process.exit(1);
   });
@@ -243,15 +348,33 @@ process.on('unhandledRejection', (err, promise) => {
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (err) => {
-  console.log(`❌ Uncaught Exception: ${err.message}`);
+  logger.error('Uncaught Exception', {
+    error: err.message,
+    stack: err.stack
+  });
   process.exit(1);
 });
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('👋 SIGTERM received. Shutting down gracefully...');
+  logger.info('SIGTERM received. Shutting down gracefully...');
   server.close(() => {
-    console.log('💤 Process terminated');
+    logger.info('Process terminated');
+    // Close database connections
+    mongoose.connection.close();
+    // Close cache connection
+    cache.close();
+  });
+});
+
+process.on('SIGINT', () => {
+  logger.info('SIGINT received. Shutting down gracefully...');
+  server.close(() => {
+    logger.info('Process terminated');
+    // Close database connections
+    mongoose.connection.close();
+    // Close cache connection
+    cache.close();
   });
 });
 
