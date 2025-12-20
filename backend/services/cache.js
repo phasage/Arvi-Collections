@@ -8,6 +8,13 @@ class CacheService {
   }
 
   async init() {
+    // Check if Redis is enabled
+    if (process.env.REDIS_ENABLED === 'false') {
+      console.log('📝 Redis disabled in development mode');
+      this.isConnected = false;
+      return;
+    }
+
     try {
       // Redis configuration
       const redisConfig = {
