@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Click Test - Arvi's Collection</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-button { 
+            padding: 15px 30px; 
+            margin: 10px; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 16px;
+        }
+        .test-button:hover { background: #0056b3; }
+        .result { 
+            margin: 10px 0; 
+            padding: 10px; 
+            border-radius: 5px; 
+            background: #f8f9fa; 
+            border-left: 4px solid #007bff;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin: -20px -20px 20px -20px;
+            text-align: center;
+        }
+        .nav-icons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .nav-icons i {
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        .nav-icons i:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="header">
+        <h1>🔍 UI Click Test - Arvi's Collection</h1>
+        <p>Testing if UI elements are clickable</p>
+        <div class="nav-icons">
+            <i class="fas fa-search" onclick="testClick('Search Icon')"></i>
+            <i class="fas fa-shopping-cart" onclick="testClick('Cart Icon')"></i>
+            <i class="fas fa-user" onclick="testClick('User Icon')"></i>
+        </div>
+    </div>
+
+    <div id="results">
+        <div class="result">
+            <strong>🎯 Click Test Instructions:</strong><br>
+            Click on any button or icon below to test if UI interactions work.
+        </div>
+    </div>
+
+    <button class="test-button" onclick="testClick('Button 1')">Test Button 1</button>
+    <button class="test-button" onclick="testClick('Button 2')">Test Button 2</button>
+    <button class="test-button" onclick="testClick('Button 3')">Test Button 3</button>
+    <button class="test-button" onclick="testAPICall()">Test API Call</button>
+    <button class="test-button" onclick="testMainApp()">Open Main App</button>
+
+    <script>
+        let clickCount = 0;
+
+        function testClick(elementName) {
+            clickCount++;
+            const resultsDiv = document.getElementById('results');
+            const newResult = document.createElement('div');
+            newResult.className = 'result';
+            newResult.innerHTML = `
+                <strong>✅ Click #${clickCount}:</strong> ${elementName} clicked successfully!<br>
+                <small>Time: ${new Date().toLocaleTimeString()}</small>
+            `;
+            resultsDiv.appendChild(newResult);
+            
+            // Scroll to show the result
+            newResult.scrollIntoView({ behavior: 'smooth' });
+            
+            console.log(`UI Test: ${elementName} clicked at ${new Date().toLocaleTimeString()}`);
+        }
+
+        async function testAPICall() {
+            const resultsDiv = document.getElementById('results');
+            const newResult = document.createElement('div');
+            newResult.className = 'result';
+            newResult.innerHTML = '<strong>🔄 Testing API Call...</strong>';
+            resultsDiv.appendChild(newResult);
+
+            try {
+                const response = await fetch('http://localhost:5000/api/health');
+                const data = await response.json();
+                
+                newResult.innerHTML = `
+                    <strong>✅ API Call Success:</strong><br>
+                    Status: ${response.status}<br>
+                    Message: ${data.message}<br>
+                    <small>Backend is responding correctly</small>
+                `;
+            } catch (error) {
+                newResult.innerHTML = `
+                    <strong>❌ API Call Failed:</strong><br>
+                    Error: ${error.message}<br>
+                    <small>Backend might not be running</small>
+                `;
+            }
+        }
+
+        function testMainApp() {
+            const resultsDiv = document.getElementById('results');
+            const newResult = document.createElement('div');
+            newResult.className = 'result';
+            newResult.innerHTML = `
+                <strong>🚀 Opening Main App:</strong><br>
+                Attempting to open app.html...<br>
+                <small>Check if a new tab/window opens</small>
+            `;
+            resultsDiv.appendChild(newResult);
+
+            // Try to open the main app
+            try {
+                window.open('app.html', '_blank');
+            } catch (error) {
+                newResult.innerHTML += `<br><strong>Error:</strong> ${error.message}`;
+            }
+        }
+
+        // Test if JavaScript is working on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('UI Test: JavaScript loaded successfully');
+            testClick('Page Load (Auto)');
+        });
+
+        // Test if clicks work on the document
+        document.addEventListener('click', function(event) {
+            console.log('Document click detected:', event.target.tagName, event.target.className);
+        });
+    </script>
+</body>
+</html>
