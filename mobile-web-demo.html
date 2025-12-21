@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arvi's Collection Mobile Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            overflow-x: hidden;
+        }
+
+        .mobile-container {
+            max-width: 375px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 20px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        /* Navigation Tabs */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 375px;
+            background: white;
+            border-top: 1px solid #eee;
+            display: flex;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-item.active {
+            color: #667eea;
+        }
+
+        .nav-item .icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .nav-item .label {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Content */
+        .content {
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Product Cards */
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #999;
+        }
+
+        .product-info {
+            padding: 12px;
+        }
+
+        .product-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .product-price {
+            font-size: 16px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .add-to-cart {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* Categories */
+        .category-list {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        .category-card {
+            min-width: 150px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Cart */
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            background: white;
+            margin-bottom: 10px;
+            border-radius: 12px;
+        }
+
+        .cart-item-image {
+            width: 60px;
+            height: 60px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #999;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-price {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Profile */
+        .profile-menu {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item .icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+            color: #667eea;
+        }
+
+        /* Login Form */
+        .login-form {
+            background: white;
+            padding: 30px 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .demo-credentials {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .cart-total {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .total-row.grand-total {
+            font-weight: bold;
+            font-size: 18px;
+            color: #667eea;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .search-bar {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Arvi's Collection</h1>
+            <p>Mobile Shopping Experience</p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Home Screen -->
+            <div class="screen active" id="home">
+                <div class="section-title">Featured Products</div>
+                <div class="product-grid">
+                    <div class="product-card">
+                        <div class="product-image">👕</div>
+                        <div class="product-info">
+                            <div class="product-name">Premium T-Shirt</div>
+                            <div class="product-price">$29.99</div>
+                            <button class="add-to-cart" onclick="addToCart('Premium T-Shirt', 29.99)">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-image">👖</div>
+                        <div class="product-info">
+                            <div class="product-name">Designer Jeans</div>
+                            <div class="product-price">$79.99</div>
+                            <button class="add-to-cart" onclick="addToCart('Designer Jeans', 79.99)">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-image">👟</div>
+                        <div class="product-info">
+                            <div class="product-name">Sport Shoes</div>
+                            <div class="product-price">$99.99</div>
+                            <button class="add-to-cart" onclick="addToCart('Sport Shoes', 99.99)">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-image">👜</div>
+                        <div class="product-info">
+                            <div class="product-name">Leather Bag</div>
+                            <div class="product-price">$149.99</div>
+                            <button class="add-to-cart" onclick="addToCart('Leather Bag', 149.99)">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title" style="margin-top: 30px;">Categories</div>
+                <div class="category-list">
+                    <div class="category-card">Clothing</div>
+                    <div class="category-card">Accessories</div>
+                    <div class="category-card">Footwear</div>
+                </div>
+            </div>
+
+            <!-- Products Screen -->
+            <div class="screen" id="products">
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="Search products...">
+                </div>
+                <div class="section-title">All Products</div>
+                <div class="product-grid">
+                    <div class="product-card">
+                        <div class="product-image">👕</div>
+                        <div class="product-info">
+                            <div class="product-name">Cotton T-Shirt</div>
+                            <div class="product-price">$24.99</div>
+                            <button class="add-to-cart" onclick="addToCart('Cotton T-Shirt', 24.99)">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-image">👔</div>
+                        <div class="product-info">
+                            <div class="product-name">Formal Shirt</div>
+                            <div class="product-price">$49.99</div>
+                            <button class="add-to-cart" onclick="addToCart('Formal Shirt', 49.99)">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-image">🧥</div>
+                        <div class="product-info">
+                            <div class="product-name">Winter Jacket</div>
+                            <div class="product-price">$129.99</div>
+                            <button class="add-to-cart" onclick="addToCart('Winter Jacket', 129.99)">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-image">👗</div>
+                        <div class="product-info">
+                            <div class="product-name">Summer Dress</div>
+                            <div class="product-price">$69.99</div>
+                            <button class="add-to-cart" onclick="addToCart('Summer Dress', 69.99)">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Screen -->
+            <div class="screen" id="cart">
+                <div class="section-title">Shopping Cart</div>
+                <div id="cart-items">
+                    <div class="empty-state">
+                        <div class="icon">🛒</div>
+                        <h3>Your cart is empty</h3>
+                        <p>Add some items to get started</p>
+                    </div>
+                </div>
+                <div id="cart-total" class="cart-total" style="display: none;">
+                    <div class="total-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">$0.00</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Shipping:</span>
+                        <span>$9.99</span>
+                    </div>
+                    <div class="total-row grand-total">
+                        <span>Total:</span>
+                        <span id="total">$0.00</span>
+                    </div>
+                    <button class="checkout-btn">Proceed to Checkout</button>
+                </div>
+            </div>
+
+            <!-- Profile Screen -->
+            <div class="screen" id="profile">
+                <div class="section-title">Profile</div>
+                <div class="login-form">
+                    <div class="form-group">
+                        <input type="email" class="form-input" placeholder="Email Address" value="admin@arviscollection.com">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-input" placeholder="Password" value="admin123">
+                    </div>
+                    <button class="login-btn" onclick="login()">Sign In</button>
+                    <div class="demo-credentials">
+                        <strong>Demo Credentials:</strong><br>
+                        Email: admin@arviscollection.com<br>
+                        Password: admin123
+                    </div>
+                </div>
+
+                <div class="profile-menu" style="margin-top: 30px;">
+                    <div class="menu-item">
+                        <div class="icon">👤</div>
+                        <span>Edit Profile</span>
+                    </div>
+                    <div class="menu-item">
+                        <div class="icon">📦</div>
+                        <span>My Orders</span>
+                    </div>
+                    <div class="menu-item">
+                        <div class="icon">📍</div>
+                        <span>Addresses</span>
+                    </div>
+                    <div class="menu-item">
+                        <div class="icon">💳</div>
+                        <span>Payment Methods</span>
+                    </div>
+                    <div class="menu-item">
+                        <div class="icon">🔔</div>
+                        <span>Notifications</span>
+                    </div>
+                    <div class="menu-item">
+                        <div class="icon">❓</div>
+                        <span>Help & Support</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="showScreen('home')">
+                <div class="icon">🏠</div>
+                <div class="label">Home</div>
+            </div>
+            <div class="nav-item" onclick="showScreen('products')">
+                <div class="icon">🛍️</div>
+                <div class="label">Products</div>
+            </div>
+            <div class="nav-item" onclick="showScreen('cart')">
+                <div class="icon">🛒</div>
+                <div class="label">Cart</div>
+            </div>
+            <div class="nav-item" onclick="showScreen('profile')">
+                <div class="icon">👤</div>
+                <div class="label">Profile</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+
+        function showScreen(screenName) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Remove active from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected screen
+            document.getElementById(screenName).classList.add('active');
+            
+            // Add active to selected nav item
+            event.target.closest('.nav-item').classList.add('active');
+        }
+
+        function addToCart(name, price) {
+            const existingItem = cart.find(item => item.name === name);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ name, price, quantity: 1 });
+            }
+            
+            updateCartDisplay();
+            
+            // Show success message
+            alert(`${name} added to cart!`);
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartDisplay();
+        }
+
+        function updateQuantity(index, change) {
+            cart[index].quantity += change;
+            if (cart[index].quantity <= 0) {
+                removeFromCart(index);
+            } else {
+                updateCartDisplay();
+            }
+        }
+
+        function updateCartDisplay() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartTotalContainer = document.getElementById('cart-total');
+            
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🛒</div>
+                        <h3>Your cart is empty</h3>
+                        <p>Add some items to get started</p>
+                    </div>
+                `;
+                cartTotalContainer.style.display = 'none';
+                return;
+            }
+            
+            let cartHTML = '';
+            let subtotal = 0;
+            
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                
+                cartHTML += `
+                    <div class="cart-item">
+                        <div class="cart-item-image">📦</div>
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+                        </div>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">-</button>
+                            <span>${item.quantity}</span>
+                            <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            cartItemsContainer.innerHTML = cartHTML;
+            
+            const shipping = 9.99;
+            const total = subtotal + shipping;
+            
+            document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+            
+            cartTotalContainer.style.display = 'block';
+        }
+
+        function login() {
+            alert('Login successful! Welcome to Arvi\'s Collection');
+        }
+
+        // Initialize
+        updateCartDisplay();
+    </script>
+</body>
+</html>
