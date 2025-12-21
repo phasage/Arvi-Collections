@@ -1,0 +1,41 @@
+[
+  {
+    "_id": "mjfdemyzypu5opuy22r",
+    "name": "Admin User",
+    "email": "admin@arviscollection.com",
+    "password": "$2b$10$rQZ9QmjytWIHq8fJvXrqUOKvEWFJZfZqvXrqUOKvEWFJZfZqvXrqUO",
+    "role": "admin",
+    "phone": "+1234567890",
+    "address": {
+      "street": "123 Admin Street",
+      "city": "Admin City",
+      "state": "AC",
+      "zipCode": "12345",
+      "country": "USA"
+    },
+    "createdAt": "2025-12-21T06:53:05.099Z",
+    "updatedAt": "2025-12-21T07:22:08.674Z",
+    "resetPasswordToken": "cdacce98ca13601633359e390604395c826b2b07ee262b6e2249d3c2e7b641a9",
+    "resetPasswordExpire": 1766302328664
+  },
+  {
+    "_id": "mjfdemyzwst64klaqi",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "$2b$10$rQZ9QmjytWIHq8fJvXrqUOKvEWFJZfZqvXrqUOKvEWFJZfZqvXrqUO",
+    "role": "customer",
+    "phone": "+1234567891",
+    "createdAt": "2025-12-21T06:53:05.099Z",
+    "updatedAt": "2025-12-21T06:53:05.099Z"
+  },
+  {
+    "_id": "mjfdemyzbvfy9j95is",
+    "name": "Jane Smith",
+    "email": "jane@example.com",
+    "password": "$2b$10$rQZ9QmjytWIHq8fJvXrqUOKvEWFJZfZqvXrqUOKvEWFJZfZqvXrqUO",
+    "role": "customer",
+    "phone": "+1234567892",
+    "createdAt": "2025-12-21T06:53:05.099Z",
+    "updatedAt": "2025-12-21T06:53:05.099Z"
+  }
+]

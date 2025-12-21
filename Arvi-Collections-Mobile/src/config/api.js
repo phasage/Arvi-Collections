@@ -1,17 +1,32 @@
-// API Configuration
-// For development, you can use:
-// - 'http://localhost:5000/api' for Android emulator
-// - 'http://10.0.2.2:5000/api' for Android emulator (alternative)
-// - 'http://YOUR_COMPUTER_IP:5000/api' for physical devices
-// 
-// To find your computer's IP address:
-// Windows: Run 'ipconfig' in command prompt, look for IPv4 Address
-// Mac/Linux: Run 'ifconfig' in terminal, look for inet address
-// 
-// Example: 'http://192.168.1.100:5000/api'
+import Constants from 'expo-constants';
 
-export const API_BASE = 'http://localhost:5000/api';
+// Environment-aware API configuration
+const getApiBase = () => {
+  // Check if running in development mode
+  if (__DEV__) {
+    // Development configurations
+    const { platform } = Constants.platform;
+    
+    if (platform?.ios) {
+      return 'http://localhost:5000/api'; // iOS Simulator
+    } else if (platform?.android) {
+      return 'http://10.0.2.2:5000/api'; // Android Emulator
+    } else {
+      return 'http://localhost:5000/api'; // Web or other platforms
+    }
+  } else {
+    // Production configuration
+    return Constants.expoConfig?.extra?.apiUrl || 'https://api.arviscollection.com/api';
+  }
+};
 
-// Alternative configurations:
-// export const API_BASE = 'http://10.0.2.2:5000/api'; // Android emulator alternative
-// export const API_BASE = 'http://192.168.1.100:5000/api'; // Replace with your computer's IP
+export const API_BASE = getApiBase();
+
+// Timeout configurations
+export const API_TIMEOUT = 10000; // 10 seconds
+export const UPLOAD_TIMEOUT = 30000; // 30 seconds for file uploads
+
+// Development helper - get local IP for physical device testing
+export const getLocalDeviceUrl = (ip) => `http://${ip}:5000/api`;
+
+console.log('🌐 API Base URL:', API_BASE);

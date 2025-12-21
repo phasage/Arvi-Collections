@@ -1,0 +1,214 @@
+[
+  {
+    "_id": "mjfdemz2r54vsy1vwp",
+    "name": "Premium Cotton T-Shirt",
+    "description": "High-quality cotton t-shirt perfect for everyday wear. Soft, comfortable, and durable.",
+    "price": 29.99,
+    "comparePrice": 39.99,
+    "category": "mjfdemyv05q71bdvx01d",
+    "brand": "Arvi's Collection",
+    "sku": "AC-TSHIRT-001",
+    "stock": 50,
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
+        "alt": "Premium Cotton T-Shirt"
+      }
+    ],
+    "features": [
+      "100% Cotton",
+      "Machine Washable",
+      "Comfortable Fit"
+    ],
+    "specifications": {
+      "Material": "100% Cotton",
+      "Care": "Machine Wash Cold",
+      "Fit": "Regular"
+    },
+    "tags": [
+      "cotton",
+      "casual",
+      "comfortable"
+    ],
+    "featured": true,
+    "onSale": true,
+    "active": true,
+    "createdAt": "2025-12-21T06:53:05.102Z",
+    "updatedAt": "2025-12-21T06:53:05.102Z"
+  },
+  {
+    "_id": "mjfdemz2yma57b4d6tr",
+    "name": "Designer Denim Jeans",
+    "description": "Stylish denim jeans with a modern fit. Perfect for casual and semi-formal occasions.",
+    "price": 79.99,
+    "comparePrice": 99.99,
+    "category": "mjfdemyv05q71bdvx01d",
+    "brand": "Arvi's Collection",
+    "sku": "AC-JEANS-001",
+    "stock": 30,
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400",
+        "alt": "Designer Denim Jeans"
+      }
+    ],
+    "features": [
+      "Stretch Denim",
+      "Modern Fit",
+      "Durable Construction"
+    ],
+    "specifications": {
+      "Material": "98% Cotton, 2% Elastane",
+      "Care": "Machine Wash Cold",
+      "Fit": "Slim"
+    },
+    "tags": [
+      "denim",
+      "jeans",
+      "casual"
+    ],
+    "featured": true,
+    "onSale": true,
+    "active": true,
+    "createdAt": "2025-12-21T06:53:05.102Z",
+    "updatedAt": "2025-12-21T06:53:05.102Z"
+  },
+  {
+    "_id": "mjfdemz28u8a694b6ab",
+    "name": "Sport Running Shoes",
+    "description": "Lightweight running shoes designed for comfort and performance. Perfect for daily runs and workouts.",
+    "price": 99.99,
+    "category": "mjfdemyvlyovt0q8hvb",
+    "brand": "Arvi's Collection",
+    "sku": "AC-SHOES-001",
+    "stock": 25,
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400",
+        "alt": "Sport Running Shoes"
+      }
+    ],
+    "features": [
+      "Lightweight",
+      "Breathable Mesh",
+      "Cushioned Sole"
+    ],
+    "specifications": {
+      "Material": "Synthetic Mesh",
+      "Sole": "Rubber",
+      "Type": "Running"
+    },
+    "tags": [
+      "shoes",
+      "running",
+      "sport"
+    ],
+    "featured": true,
+    "active": true,
+    "createdAt": "2025-12-21T06:53:05.102Z",
+    "updatedAt": "2025-12-21T06:53:05.102Z"
+  },
+  {
+    "_id": "mjfdemz2okfkohhzl2",
+    "name": "Leather Handbag",
+    "description": "Elegant leather handbag perfect for work and special occasions. Spacious and stylish.",
+    "price": 149.99,
+    "category": "mjfdemyvqf3kzreu42p",
+    "brand": "Arvi's Collection",
+    "sku": "AC-BAG-001",
+    "stock": 15,
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400",
+        "alt": "Leather Handbag"
+      }
+    ],
+    "features": [
+      "Genuine Leather",
+      "Multiple Compartments",
+      "Adjustable Strap"
+    ],
+    "specifications": {
+      "Material": "Genuine Leather",
+      "Dimensions": "12\" x 8\" x 4\"",
+      "Closure": "Zipper"
+    },
+    "tags": [
+      "leather",
+      "handbag",
+      "accessories"
+    ],
+    "featured": true,
+    "active": true,
+    "createdAt": "2025-12-21T06:53:05.102Z",
+    "updatedAt": "2025-12-21T06:53:05.102Z"
+  },
+  {
+    "_id": "mjfdemz219uw5gyml4a",
+    "name": "Casual Button Shirt",
+    "description": "Versatile button-up shirt suitable for both casual and business casual settings.",
+    "price": 49.99,
+    "category": "mjfdemyv05q71bdvx01d",
+    "brand": "Arvi's Collection",
+    "sku": "AC-SHIRT-001",
+    "stock": 40,
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400",
+        "alt": "Casual Button Shirt"
+      }
+    ],
+    "features": [
+      "Wrinkle Resistant",
+      "Breathable Fabric",
+      "Classic Fit"
+    ],
+    "specifications": {
+      "Material": "60% Cotton, 40% Polyester",
+      "Care": "Machine Wash",
+      "Fit": "Classic"
+    },
+    "tags": [
+      "shirt",
+      "casual",
+      "business"
+    ],
+    "active": true,
+    "createdAt": "2025-12-21T06:53:05.102Z",
+    "updatedAt": "2025-12-21T06:53:05.102Z"
+  },
+  {
+    "_id": "mjfdemz24bn6gbvebfv",
+    "name": "Winter Jacket",
+    "description": "Warm and stylish winter jacket to keep you comfortable in cold weather.",
+    "price": 129.99,
+    "category": "mjfdemyv05q71bdvx01d",
+    "brand": "Arvi's Collection",
+    "sku": "AC-JACKET-001",
+    "stock": 20,
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400",
+        "alt": "Winter Jacket"
+      }
+    ],
+    "features": [
+      "Water Resistant",
+      "Insulated",
+      "Multiple Pockets"
+    ],
+    "specifications": {
+      "Material": "Polyester Shell, Down Fill",
+      "Care": "Dry Clean Only",
+      "Season": "Winter"
+    },
+    "tags": [
+      "jacket",
+      "winter",
+      "outerwear"
+    ],
+    "active": true,
+    "createdAt": "2025-12-21T06:53:05.102Z",
+    "updatedAt": "2025-12-21T06:53:05.102Z"
+  }
+]

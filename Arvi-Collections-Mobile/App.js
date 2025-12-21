@@ -16,10 +16,14 @@ import RegisterScreen from './src/screens/RegisterScreen';
 import CheckoutScreen from './src/screens/CheckoutScreen';
 import OrdersScreen from './src/screens/OrdersScreen';
 import CategoriesScreen from './src/screens/CategoriesScreen';
+import SecurityScreen from './src/screens/SecurityScreen';
 
 // Context
 import { AuthProvider } from './src/context/AuthContext';
 import { CartProvider } from './src/context/CartContext';
+
+// Error Boundary
+import ErrorBoundary from './src/components/ErrorBoundary';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -58,59 +62,66 @@ function HomeTabs() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <NavigationContainer>
-          <StatusBar style="auto" />
-          <Stack.Navigator
-            screenOptions={{
-              headerStyle: {
-                backgroundColor: '#667eea',
-              },
-              headerTintColor: '#fff',
-              headerTitleStyle: {
-                fontWeight: 'bold',
-              },
-            }}
-          >
-            <Stack.Screen 
-              name="Main" 
-              component={HomeTabs} 
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen 
-              name="ProductDetail" 
-              component={ProductDetailScreen}
-              options={{ title: 'Product Details' }}
-            />
-            <Stack.Screen 
-              name="Login" 
-              component={LoginScreen}
-              options={{ title: 'Sign In' }}
-            />
-            <Stack.Screen 
-              name="Register" 
-              component={RegisterScreen}
-              options={{ title: 'Create Account' }}
-            />
-            <Stack.Screen 
-              name="Checkout" 
-              component={CheckoutScreen}
-              options={{ title: 'Checkout' }}
-            />
-            <Stack.Screen 
-              name="Orders" 
-              component={OrdersScreen}
-              options={{ title: 'My Orders' }}
-            />
-            <Stack.Screen 
-              name="Categories" 
-              component={CategoriesScreen}
-              options={{ title: 'Categories' }}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </CartProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <CartProvider>
+          <NavigationContainer>
+            <StatusBar style="auto" />
+            <Stack.Navigator
+              screenOptions={{
+                headerStyle: {
+                  backgroundColor: '#667eea',
+                },
+                headerTintColor: '#fff',
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                },
+              }}
+            >
+              <Stack.Screen 
+                name="Main" 
+                component={HomeTabs} 
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen 
+                name="ProductDetail" 
+                component={ProductDetailScreen}
+                options={{ title: 'Product Details' }}
+              />
+              <Stack.Screen 
+                name="Login" 
+                component={LoginScreen}
+                options={{ title: 'Sign In' }}
+              />
+              <Stack.Screen 
+                name="Register" 
+                component={RegisterScreen}
+                options={{ title: 'Create Account' }}
+              />
+              <Stack.Screen 
+                name="Checkout" 
+                component={CheckoutScreen}
+                options={{ title: 'Checkout' }}
+              />
+              <Stack.Screen 
+                name="Orders" 
+                component={OrdersScreen}
+                options={{ title: 'My Orders' }}
+              />
+              <Stack.Screen 
+                name="Categories" 
+                component={CategoriesScreen}
+                options={{ title: 'Categories' }}
+              />
+              <Stack.Screen 
+                name="Security" 
+                component={SecurityScreen}
+                options={{ title: 'Security & MFA' }}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </CartProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

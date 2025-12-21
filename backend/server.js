@@ -21,6 +21,7 @@ const logger = require('./services/logger');
 const monitoring = require('./services/monitoring');
 const { cache } = require('./services/cache');
 const imageService = require('./services/imageService');
+const DatabaseService = require('./services/database');
 
 // Import Swagger
 const { swaggerUi, specs } = require('./swagger');
@@ -31,6 +32,7 @@ const productRoutes = require('./routes/products');
 const categoryRoutes = require('./routes/categories');
 const orderRoutes = require('./routes/orders');
 const userRoutes = require('./routes/users');
+const mfaRoutes = require('./routes/mfa');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -173,46 +175,45 @@ if (process.env.NODE_ENV === 'development') {
 app.use(monitoring.requestMonitoring());
 app.use(logger.requestLogger());
 
-// Connect to MongoDB
+// Initialize database service
+const db = new DatabaseService();
+global.db = db; // Make database available globally
+
+// Connect to database (File Database + MongoDB fallback)
 const connectDB = async () => {
   try {
+    // Always use file database as primary
+    await db.connect();
+    logger.info('File database initialized successfully');
+    
+    // Try MongoDB as secondary (optional)
     const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/arvis-collection';
     
-    // Try to connect to MongoDB
-    await mongoose.connect(mongoURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-    });
+    try {
+      await mongoose.connect(mongoURI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+      });
+      logger.info('MongoDB connected as secondary database', { uri: mongoURI });
+      global.mongoConnected = true;
+    } catch (mongoErr) {
+      logger.warn('MongoDB not available, using file database only', { error: mongoErr.message });
+      global.mongoConnected = false;
+    }
     
-    logger.info('MongoDB connected successfully', { uri: mongoURI });
     return true;
   } catch (err) {
-    logger.warn('MongoDB not available, using demo mode', { error: err.message });
-    
-    // Create a simple in-memory mock for demo
-    global.demoMode = true;
-    global.demoData = {
-      users: [],
-      products: [],
-      categories: [],
-      orders: []
-    };
-    
+    logger.error('Database initialization failed', { error: err.message });
     return false;
   }
 };
 
 connectDB().then(async (connected) => {
-  if (!connected) {
-    // Initialize demo data if MongoDB is not available
-    const { initializeDemoData } = require('./utils/demoData');
-    await initializeDemoData();
-  }
-  
   // Log startup information
   logger.info('Server initialization completed', {
-    mongodb: connected ? 'connected' : 'demo mode',
+    database: 'file database',
+    mongodb: global.mongoConnected ? 'connected' : 'not available',
     redis: cache.isConnected ? 'connected' : 'not available',
     cloudinary: imageService.isCloudinaryConfigured ? 'configured' : 'local storage',
     environment: process.env.NODE_ENV
@@ -230,8 +231,9 @@ app.get('/api/health', (req, res) => {
     version: '1.0.0',
     uptime: process.uptime(),
     database: {
-      status: global.demoMode ? 'demo' : 'connected',
-      mode: global.demoMode ? 'Demo mode - MongoDB not available' : 'MongoDB connected'
+      status: 'connected',
+      mode: 'File Database',
+      mongodb: global.mongoConnected ? 'connected' : 'not available'
     },
     cache: {
       status: cache.isConnected ? 'connected' : 'not available',
@@ -306,6 +308,7 @@ app.get('/api', (req, res) => {
 
 // API routes
 app.use('/api/auth', authRoutes);
+app.use('/api/mfa', mfaRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/orders', orderRoutes);

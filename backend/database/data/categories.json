@@ -1,0 +1,29 @@
+[
+  {
+    "_id": "mjfdemyv05q71bdvx01d",
+    "name": "Clothing",
+    "description": "Fashionable clothing for all occasions",
+    "image": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400",
+    "active": true,
+    "createdAt": "2025-12-21T06:53:05.095Z",
+    "updatedAt": "2025-12-21T06:53:05.095Z"
+  },
+  {
+    "_id": "mjfdemyvqf3kzreu42p",
+    "name": "Accessories",
+    "description": "Stylish accessories to complete your look",
+    "image": "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=400",
+    "active": true,
+    "createdAt": "2025-12-21T06:53:05.095Z",
+    "updatedAt": "2025-12-21T06:53:05.095Z"
+  },
+  {
+    "_id": "mjfdemyvlyovt0q8hvb",
+    "name": "Footwear",
+    "description": "Comfortable and trendy shoes",
+    "image": "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400",
+    "active": true,
+    "createdAt": "2025-12-21T06:53:05.095Z",
+    "updatedAt": "2025-12-21T06:53:05.095Z"
+  }
+]

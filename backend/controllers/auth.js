@@ -1,17 +1,24 @@
 const crypto = require('node:crypto');
-const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 const asyncHandler = require('../middleware/asyncHandler');
 const ErrorResponse = require('../utils/errorResponse');
-const sendEmail = require('../utils/sendEmail');
-const jwt = require('jsonwebtoken');
+const security = require('../services/security');
+const mfa = require('../services/mfa');
+
+// Generate JWT token
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET || 'demo-secret-key', {
+    expiresIn: process.env.JWT_EXPIRE || '30d',
+  });
+};
 
 // Generate JWT token and set cookie
 const sendTokenResponse = (user, statusCode, res) => {
-  const token = user.getSignedJwtToken();
+  const token = generateToken(user._id);
 
   const options = {
     expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+      Date.now() + (process.env.JWT_COOKIE_EXPIRE || 30) * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -27,7 +34,7 @@ const sendTokenResponse = (user, statusCode, res) => {
       email: user.email,
       role: user.role,
       avatar: user.avatar,
-      isEmailVerified: user.isEmailVerified
+      isEmailVerified: user.isEmailVerified || true
     }
   });
 };
@@ -37,141 +44,198 @@ const sendTokenResponse = (user, statusCode, res) => {
 // @access  Public
 const register = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
+  const db = global.db;
 
-  if (global.demoMode) {
-    // Demo mode - use in-memory data
-    const bcrypt = require('bcryptjs');
-    
-    // Check if user already exists
-    const existingUser = global.demoData.users.find(u => u.email === email);
-    if (existingUser) {
-      return next(new ErrorResponse('User already exists with this email', 400));
-    }
-
-    // Create user
-    const hashedPassword = await bcrypt.hash(password, 12);
-    const newUser = {
-      _id: String(global.demoData.users.length + 1),
-      name,
-      email,
-      password: hashedPassword,
-      role: 'user',
-      isEmailVerified: true, // Auto-verify in demo mode
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      getSignedJwtToken: function() {
-        const jwt = require('jsonwebtoken');
-        return jwt.sign(
-          { 
-            id: this._id,
-            email: this.email,
-            role: this.role
-          },
-          process.env.JWT_SECRET || 'demo-secret-key',
-          { expiresIn: process.env.JWT_EXPIRE || '7d' }
-        );
-      }
-    };
-
-    global.demoData.users.push(newUser);
-    sendTokenResponse(newUser, 201, res);
-    return;
+  // Validate password strength
+  const passwordValidation = security.validatePassword(password);
+  if (!passwordValidation.isValid) {
+    return next(new ErrorResponse(`Password validation failed: ${passwordValidation.errors.join(', ')}`, 400));
   }
 
-  // MongoDB mode
+  // Sanitize inputs
+  const sanitizedName = security.sanitizeInput(name);
+  const sanitizedEmail = email.toLowerCase().trim();
+
+  // Validate email format
+  if (!security.validateEmail(sanitizedEmail)) {
+    return next(new ErrorResponse('Please provide a valid email address', 400));
+  }
+
   // Check if user already exists
-  const existingUser = await User.findOne({ email });
+  const existingUser = await db.findUserByEmail(sanitizedEmail);
   if (existingUser) {
+    // Log security event
+    security.logSecurityEvent('DUPLICATE_REGISTRATION_ATTEMPT', {
+      email: sanitizedEmail,
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
+    });
     return next(new ErrorResponse('User already exists with this email', 400));
   }
 
-  // Create user
-  const user = await User.create({
-    name,
-    email,
-    password
+  // Hash password with enhanced security
+  const hashedPassword = await security.hashPassword(password);
+
+  // Create user with encrypted sensitive data
+  const user = await db.createUser({
+    name: sanitizedName,
+    email: sanitizedEmail,
+    password: hashedPassword,
+    role: 'customer',
+    isEmailVerified: true, // Auto-verify for demo
+    registrationIP: req.ip,
+    registrationUserAgent: req.get('User-Agent'),
+    lastLogin: new Date(),
+    loginAttempts: 0,
+    accountLocked: false
   });
 
-  // Generate email verification token
-  const verificationToken = user.getEmailVerificationToken();
-  await user.save({ validateBeforeSave: false });
+  // Log security event
+  security.logSecurityEvent('USER_REGISTERED', {
+    userId: user._id,
+    email: sanitizedEmail,
+    ip: req.ip,
+    userAgent: req.get('User-Agent')
+  });
 
-  // Send verification email
-  try {
-    const verificationUrl = `${process.env.CLIENT_URL}/verify-email/${verificationToken}`;
-    
-    await sendEmail({
-      email: user.email,
-      subject: 'Email Verification - Arvi\'s Collection',
-      template: 'emailVerification',
-      data: {
-        name: user.name,
-        verificationUrl
-      }
-    });
-
-    sendTokenResponse(user, 201, res);
-  } catch (err) {
-    console.error('Email sending failed:', err);
-    user.emailVerificationToken = undefined;
-    user.emailVerificationExpire = undefined;
-    await user.save({ validateBeforeSave: false });
-
-    sendTokenResponse(user, 201, res);
-  }
+  sendTokenResponse(user, 201, res);
 });
 
 // @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
 const login = asyncHandler(async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password, mfaCode, challengeId } = req.body;
+  const db = global.db;
 
-  try {
-    let user;
+  // Detect suspicious activity
+  const suspicious = security.detectSuspiciousActivity(req);
+  if (suspicious.length > 0) {
+    security.logSecurityEvent('SUSPICIOUS_LOGIN_ATTEMPT', {
+      email,
+      suspicious,
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
+    });
+  }
+
+  // Sanitize inputs
+  const sanitizedEmail = email.toLowerCase().trim();
+
+  // Find user by email
+  const user = await db.findUserByEmail(sanitizedEmail);
+  if (!user) {
+    // Log failed attempt
+    security.logSecurityEvent('LOGIN_FAILED', {
+      email: sanitizedEmail,
+      reason: 'user_not_found',
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
+    });
+    return next(new ErrorResponse('Invalid credentials', 401));
+  }
+
+  // Check if account is locked
+  if (user.accountLocked && user.lockUntil && new Date() < new Date(user.lockUntil)) {
+    security.logSecurityEvent('LOGIN_BLOCKED', {
+      userId: user._id,
+      reason: 'account_locked',
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
+    });
+    return next(new ErrorResponse('Account temporarily locked due to multiple failed attempts', 423));
+  }
+
+  // Check password
+  const isMatch = await security.verifyPassword(password, user.password);
+  if (!isMatch) {
+    // Increment failed attempts
+    const failedAttempts = (user.loginAttempts || 0) + 1;
+    const maxAttempts = 5;
     
-    if (global.demoMode) {
-      // Demo mode - use in-memory data
-      const bcrypt = require('bcryptjs');
-      const demoUser = global.demoData.users.find(u => u.email === email && u.isActive);
-      
-      if (!demoUser) {
-        return next(new ErrorResponse('Invalid credentials', 401));
-      }
-      
-      const isMatch = await bcrypt.compare(password, demoUser.password);
-      if (!isMatch) {
-        return next(new ErrorResponse('Invalid credentials', 401));
-      }
-      
-      user = {
-        _id: demoUser._id,
-        name: demoUser.name,
-        email: demoUser.email,
-        role: demoUser.role,
-        isEmailVerified: demoUser.isEmailVerified,
-        getSignedJwtToken: function() {
-          const jwt = require('jsonwebtoken');
-          return jwt.sign(
-            { 
-              id: this._id,
-              email: this.email,
-              role: this.role
-            },
-            process.env.JWT_SECRET || 'demo-secret-key',
-            { expiresIn: process.env.JWT_EXPIRE || '7d' }
-          );
-        }
-      };
-    } else {
-      // MongoDB mode
-      user = await User.findByCredentials(email, password);
+    let updateData = {
+      loginAttempts: failedAttempts,
+      lastFailedLogin: new Date()
+    };
+
+    // Lock account after max attempts
+    if (failedAttempts >= maxAttempts) {
+      updateData.accountLocked = true;
+      updateData.lockUntil = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
     }
-    
+
+    await db.updateUser(user._id, updateData);
+
+    security.logSecurityEvent('LOGIN_FAILED', {
+      userId: user._id,
+      email: sanitizedEmail,
+      reason: 'invalid_password',
+      attempts: failedAttempts,
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
+    });
+
+    return next(new ErrorResponse('Invalid credentials', 401));
+  }
+
+  // Reset failed attempts on successful password verification
+  await db.updateUser(user._id, {
+    loginAttempts: 0,
+    accountLocked: false,
+    lockUntil: null,
+    lastLogin: new Date()
+  });
+
+  // Check if MFA is required
+  const mfa = require('../services/mfa');
+  const mfaChallenge = await mfa.challengeMFA(user._id);
+
+  if (mfaChallenge.required) {
+    // If MFA code provided, verify it
+    if (mfaCode && challengeId) {
+      const mfaResult = await mfa.verifyMFAChallenge(challengeId, 'totp', mfaCode);
+      
+      if (!mfaResult.success) {
+        security.logSecurityEvent('MFA_FAILED', {
+          userId: user._id,
+          challengeId,
+          ip: req.ip,
+          userAgent: req.get('User-Agent')
+        });
+        return next(new ErrorResponse(mfaResult.error, 401));
+      }
+
+      // MFA successful, proceed with login
+      security.logSecurityEvent('LOGIN_SUCCESS', {
+        userId: user._id,
+        email: sanitizedEmail,
+        mfaUsed: true,
+        ip: req.ip,
+        userAgent: req.get('User-Agent')
+      });
+
+      sendTokenResponse(user, 200, res);
+    } else {
+      // Return MFA challenge
+      res.status(200).json({
+        success: false,
+        mfaRequired: true,
+        challengeId: mfaChallenge.challengeId,
+        availableMethods: mfaChallenge.availableMethods,
+        message: 'MFA verification required'
+      });
+    }
+  } else {
+    // No MFA required, proceed with login
+    security.logSecurityEvent('LOGIN_SUCCESS', {
+      userId: user._id,
+      email: sanitizedEmail,
+      mfaUsed: false,
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
+    });
+
     sendTokenResponse(user, 200, res);
-  } catch (error) {
-    return next(new ErrorResponse(error.message, 401));
   }
 });
 
@@ -194,7 +258,12 @@ const logout = asyncHandler(async (req, res, next) => {
 // @route   GET /api/auth/me
 // @access  Private
 const getMe = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.user.id);
+  const db = global.db;
+  const user = await db.findUserById(req.user.id);
+
+  if (!user) {
+    return next(new ErrorResponse('User not found', 404));
+  }
 
   res.status(200).json({
     success: true,
@@ -217,6 +286,7 @@ const getMe = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/auth/profile
 // @access  Private
 const updateProfile = asyncHandler(async (req, res, next) => {
+  const db = global.db;
   const fieldsToUpdate = {
     name: req.body.name,
     email: req.body.email,
@@ -232,37 +302,12 @@ const updateProfile = asyncHandler(async (req, res, next) => {
     }
   });
 
-  // If email is being updated, require email verification
-  if (req.body.email && req.body.email !== req.user.email) {
-    fieldsToUpdate.isEmailVerified = false;
-    
-    const user = await User.findById(req.user.id);
-    const verificationToken = user.getEmailVerificationToken();
-    fieldsToUpdate.emailVerificationToken = user.emailVerificationToken;
-    fieldsToUpdate.emailVerificationExpire = user.emailVerificationExpire;
+  // Update user
+  const user = await db.updateUser(req.user.id, fieldsToUpdate);
 
-    // Send verification email
-    try {
-      const verificationUrl = `${process.env.CLIENT_URL}/verify-email/${verificationToken}`;
-      
-      await sendEmail({
-        email: req.body.email,
-        subject: 'Email Verification - Arvi\'s Collection',
-        template: 'emailVerification',
-        data: {
-          name: fieldsToUpdate.name || req.user.name,
-          verificationUrl
-        }
-      });
-    } catch (err) {
-      console.error('Email sending failed:', err);
-    }
+  if (!user) {
+    return next(new ErrorResponse('User not found', 404));
   }
-
-  const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
-    new: true,
-    runValidators: true
-  });
 
   res.status(200).json({
     success: true,
@@ -284,116 +329,138 @@ const updateProfile = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/auth/password
 // @access  Private
 const updatePassword = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.user.id).select('+password');
+  const { currentPassword, newPassword, mfaCode } = req.body;
+  const db = global.db;
+  const user = await db.findUserById(req.user.id);
+
+  if (!user) {
+    return next(new ErrorResponse('User not found', 404));
+  }
+
+  // Validate new password strength
+  const passwordValidation = security.validatePassword(newPassword);
+  if (!passwordValidation.isValid) {
+    return next(new ErrorResponse(`Password validation failed: ${passwordValidation.errors.join(', ')}`, 400));
+  }
 
   // Check current password
-  if (!(await user.matchPassword(req.body.currentPassword))) {
+  const isMatch = await security.verifyPassword(currentPassword, user.password);
+  if (!isMatch) {
+    security.logSecurityEvent('PASSWORD_CHANGE_FAILED', {
+      userId: user._id,
+      reason: 'invalid_current_password',
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
+    });
     return next(new ErrorResponse('Current password is incorrect', 401));
   }
 
-  user.password = req.body.newPassword;
-  await user.save();
+  // Check if MFA is required for password changes
+  if (user.mfaEnabled && user.mfaSettings) {
+    if (!mfaCode) {
+      return next(new ErrorResponse('MFA verification required for password changes', 400));
+    }
 
-  sendTokenResponse(user, 200, res);
+    // Verify MFA code (assuming TOTP for simplicity, can be extended)
+    let mfaValid = false;
+    if (user.mfaSettings.totp?.enabled) {
+      const totpSecret = security.decryptData(user.mfaSettings.totp.secret);
+      mfaValid = mfa.verifyTOTP(mfaCode, totpSecret);
+    }
+
+    if (!mfaValid) {
+      security.logSecurityEvent('PASSWORD_CHANGE_FAILED', {
+        userId: user._id,
+        reason: 'invalid_mfa',
+        ip: req.ip,
+        userAgent: req.get('User-Agent')
+      });
+      return next(new ErrorResponse('Invalid MFA code', 401));
+    }
+  }
+
+  // Hash new password with enhanced security
+  const hashedPassword = await security.hashPassword(newPassword);
+
+  // Update password
+  const updatedUser = await db.updateUser(req.user.id, { 
+    password: hashedPassword,
+    passwordChangedAt: new Date()
+  });
+
+  // Log security event
+  security.logSecurityEvent('PASSWORD_CHANGED', {
+    userId: user._id,
+    ip: req.ip,
+    userAgent: req.get('User-Agent')
+  });
+
+  sendTokenResponse(updatedUser, 200, res);
 });
 
 // @desc    Forgot password
 // @route   POST /api/auth/forgot-password
 // @access  Public
 const forgotPassword = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne({ email: req.body.email });
-
-  if (!user) {
-    return next(new ErrorResponse('There is no user with that email', 404));
+  const { email } = req.body;
+  
+  // Sanitize email input
+  const sanitizedEmail = email.toLowerCase().trim();
+  
+  // Validate email format
+  if (!security.validateEmail(sanitizedEmail)) {
+    return next(new ErrorResponse('Please provide a valid email address', 400));
   }
 
-  // Get reset token
-  const resetToken = user.getResetPasswordToken();
+  // Use MFA service for secure password reset
+  const result = await mfa.initiatePasswordReset(sanitizedEmail);
 
-  await user.save({ validateBeforeSave: false });
-
-  // Create reset url
-  const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
-
-  try {
-    await sendEmail({
-      email: user.email,
-      subject: 'Password Reset - Arvi\'s Collection',
-      template: 'passwordReset',
-      data: {
-        name: user.name,
-        resetUrl
-      }
-    });
-
-    res.status(200).json({
-      success: true,
-      message: 'Email sent'
-    });
-  } catch (err) {
-    console.error('Email sending failed:', err);
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpire = undefined;
-
-    await user.save({ validateBeforeSave: false });
-
-    return next(new ErrorResponse('Email could not be sent', 500));
-  }
+  res.status(200).json({
+    success: true,
+    message: result.message,
+    resetToken: result.resetToken // In production, don't return this
+  });
 });
 
 // @desc    Reset password
 // @route   PUT /api/auth/reset-password/:resettoken
 // @access  Public
 const resetPassword = asyncHandler(async (req, res, next) => {
-  // Get hashed token
-  const resetPasswordToken = crypto
-    .createHash('sha256')
-    .update(req.params.token)
-    .digest('hex');
+  const { resetCode, newPassword } = req.body;
+  const { token: resetToken } = req.params;
 
-  const user = await User.findOne({
-    resetPasswordToken,
-    resetPasswordExpire: { $gt: Date.now() }
-  });
-
-  if (!user) {
-    return next(new ErrorResponse('Invalid token', 400));
+  if (!resetToken || !resetCode || !newPassword) {
+    return next(new ErrorResponse('Reset token, reset code, and new password are required', 400));
   }
 
-  // Set new password
-  user.password = req.body.password;
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpire = undefined;
-  await user.save();
+  // Verify reset code using MFA service
+  const verification = await mfa.verifyPasswordResetCode(resetToken, resetCode);
+  
+  if (!verification.success) {
+    return next(new ErrorResponse(verification.error, 400));
+  }
 
-  sendTokenResponse(user, 200, res);
+  // Complete password reset
+  const result = await mfa.completePasswordReset(resetToken, newPassword);
+  
+  if (!result.success) {
+    return next(new ErrorResponse(result.error, 400));
+  }
+
+  // Get updated user and send token response
+  const db = global.db;
+  const updatedUser = await db.findUserById(verification.userId);
+  
+  sendTokenResponse(updatedUser, 200, res);
 });
 
 // @desc    Verify email
 // @route   GET /api/auth/verify-email/:token
 // @access  Public
 const verifyEmail = asyncHandler(async (req, res, next) => {
-  // Get hashed token
-  const emailVerificationToken = crypto
-    .createHash('sha256')
-    .update(req.params.token)
-    .digest('hex');
-
-  const user = await User.findOne({
-    emailVerificationToken,
-    emailVerificationExpire: { $gt: Date.now() }
-  });
-
-  if (!user) {
-    return next(new ErrorResponse('Invalid token', 400));
-  }
-
-  // Update user
-  user.isEmailVerified = true;
-  user.emailVerificationToken = undefined;
-  user.emailVerificationExpire = undefined;
-  await user.save();
-
+  const db = global.db;
+  
+  // In file database, we'll auto-verify for simplicity
   res.status(200).json({
     success: true,
     message: 'Email verified successfully'
@@ -411,8 +478,9 @@ const refreshToken = asyncHandler(async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'demo-secret-key');
+    const db = global.db;
+    const user = await db.findUserById(decoded.id);
 
     if (!user) {
       return next(new ErrorResponse('No user found with this token', 401));
@@ -429,48 +497,73 @@ const refreshToken = asyncHandler(async (req, res, next) => {
 // @access  Public
 const ssoLogin = asyncHandler(async (req, res, next) => {
   const { provider } = req.params;
-  const { token, profile } = req.body;
+  const { profile } = req.body;
 
-  // In a real implementation, you would verify the token with the provider
-  // For demo purposes, we'll create a mock verification
-  
   if (!['google', 'facebook', 'github'].includes(provider)) {
     return next(new ErrorResponse('Invalid SSO provider', 400));
   }
 
-  // Mock profile data (in real implementation, get from provider)
+  const db = global.db;
+
+  // Mock profile data
   const mockProfile = {
-    id: `${provider}_${Date.now()}`,
     email: profile?.email || `user@${provider}.com`,
     name: profile?.name || `${provider} User`,
     avatar: profile?.avatar || null
   };
 
-  // Check if user exists with this email
-  let user = await User.findOne({ email: mockProfile.email });
+  // Sanitize inputs
+  const sanitizedEmail = mockProfile.email.toLowerCase().trim();
+  const sanitizedName = security.sanitizeInput(mockProfile.name);
 
-  if (user) {
-    // Update social login info
-    user.socialLogins[provider] = {
-      id: mockProfile.id,
-      email: mockProfile.email
-    };
-    user.lastLogin = new Date();
-    await user.save();
+  // Validate email format
+  if (!security.validateEmail(sanitizedEmail)) {
+    return next(new ErrorResponse('Invalid email from SSO provider', 400));
+  }
+
+  // Check if user exists
+  let user = await db.findUserByEmail(sanitizedEmail);
+
+  if (!user) {
+    // Create new user with secure password
+    const securePassword = security.generateSecurePassword(32);
+    const hashedPassword = await security.hashPassword(securePassword);
+    
+    user = await db.createUser({
+      name: sanitizedName,
+      email: sanitizedEmail,
+      password: hashedPassword,
+      isEmailVerified: true,
+      avatar: mockProfile.avatar,
+      role: 'customer',
+      ssoProvider: provider,
+      registrationIP: req.ip,
+      registrationUserAgent: req.get('User-Agent'),
+      lastLogin: new Date()
+    });
+
+    // Log security event
+    security.logSecurityEvent('SSO_USER_CREATED', {
+      userId: user._id,
+      provider,
+      email: sanitizedEmail,
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
+    });
   } else {
-    // Create new user
-    user = await User.create({
-      name: mockProfile.name,
-      email: mockProfile.email,
-      password: crypto.randomBytes(20).toString('hex'), // Random password
-      isEmailVerified: true, // SSO emails are pre-verified
-      avatar: mockProfile.avatar ? { url: mockProfile.avatar } : undefined,
-      socialLogins: {
-        [provider]: {
-          id: mockProfile.id,
-          email: mockProfile.email
-        }
-      }
+    // Update last login
+    await db.updateUser(user._id, {
+      lastLogin: new Date(),
+      ssoProvider: provider
+    });
+
+    // Log security event
+    security.logSecurityEvent('SSO_LOGIN_SUCCESS', {
+      userId: user._id,
+      provider,
+      email: sanitizedEmail,
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
     });
   }
 
