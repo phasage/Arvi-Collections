@@ -1,12 +1,11 @@
 {
   "expo": {
-    "name": "Arvi's Collection",
-    "slug": "arvis-collection-mobile",
+    "name": "Arvis Collection",
+    "slug": "arvis-collection",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -17,66 +16,18 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.arviscollection.mobile",
-      "buildNumber": "1.0.0",
-      "infoPlist": {
-        "NSCameraUsageDescription": "This app uses the camera to scan barcodes and take product photos.",
-        "NSPhotoLibraryUsageDescription": "This app accesses your photo library to select product images."
-      }
+      "bundleIdentifier": "com.arviscollection.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#667eea"
       },
-      "edgeToEdgeEnabled": true,
-      "package": "com.arviscollection.mobile",
-      "versionCode": 1,
-      "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.INTERNET",
-        "android.permission.ACCESS_NETWORK_STATE"
-      ]
+      "package": "com.arviscollection.app",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      "expo-secure-store",
-      [
-        "expo-camera",
-        {
-          "cameraPermission": "Allow Arvi's Collection to access your camera to scan barcodes and take photos."
-        }
-      ],
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "Allow Arvi's Collection to access your photos to select product images."
-        }
-      ],
-      [
-        "expo-barcode-scanner",
-        {
-          "cameraPermission": "Allow Arvi's Collection to access your camera to scan product barcodes."
-        }
-      ],
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/notification-icon.png",
-          "color": "#667eea"
-        }
-      ]
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "your-project-id-here"
-      },
-      "apiUrl": "https://api.arviscollection.com/api",
-      "environment": "production"
     }
   }
 }
